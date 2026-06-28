@@ -1885,6 +1885,184 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Jumper:SolderJumper_2_Open"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "JP"
+				(at 0 2.032 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SolderJumper_2_Open"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Solder Jumper, 2-pole, open"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "solder jumper SPST"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SolderJumper*Open*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SolderJumper_2_Open_0_1"
+				(polyline
+					(pts
+						(xy -0.254 1.016) (xy -0.254 -1.016)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -0.254 -1.016)
+					(mid -1.2656 0)
+					(end -0.254 1.016)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(arc
+					(start 0.254 1.016)
+					(mid 1.2656 0)
+					(end 0.254 -1.016)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 1.016) (xy 0.254 -1.016)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "SolderJumper_2_Open_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 3.81)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Regulator_Linear:ADP7142AUJZ-5.0"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -2978,6 +3156,12 @@
 		(uuid "52530db1-a31a-4c5c-a65a-a8a54dec8442")
 	)
 	(junction
+		(at 170.18 36.83)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5307d287-a698-4415-9b0b-ead13de747cd")
+	)
+	(junction
 		(at 147.32 43.18)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2988,6 +3172,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "697384ef-794b-43e0-930e-49fe4bd70d24")
+	)
+	(junction
+		(at 181.61 123.19)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6ee677d5-7f38-4963-afe6-bb403b98a8c1")
 	)
 	(junction
 		(at 214.63 138.43)
@@ -3044,12 +3234,6 @@
 		(uuid "a611b45d-f18f-470c-8ec6-5d4cef9ac489")
 	)
 	(junction
-		(at 170.18 36.83)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ab891cf0-cc1e-46d1-b492-db4e9b18c668")
-	)
-	(junction
 		(at 92.71 36.83)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3062,16 +3246,28 @@
 		(uuid "b505d6d8-07e7-40c7-9508-5e3e8e99045d")
 	)
 	(junction
-		(at 68.58 137.16)
+		(at 173.99 36.83)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "bb1eb6cc-f3bd-4142-bef7-0264e3eea758")
+		(uuid "b6e16c30-d4ef-4b3d-b432-243722f71c7a")
+	)
+	(junction
+		(at 57.15 90.17)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bc6b97ce-0479-4136-ae20-8b4dbb097e9a")
 	)
 	(junction
 		(at 181.61 134.62)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d092b987-0615-4231-abef-abb65e28a223")
+	)
+	(junction
+		(at 57.15 93.98)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d552a9b4-ab50-47c7-bc7f-fb4b8fb12053")
 	)
 	(junction
 		(at 227.33 138.43)
@@ -3127,13 +3323,23 @@
 	)
 	(wire
 		(pts
-			(xy 64.77 137.16) (xy 68.58 137.16)
+			(xy 64.77 137.16) (xy 77.47 137.16)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "06049053-1daf-4b48-a5cf-683207fc9393")
+	)
+	(wire
+		(pts
+			(xy 134.62 132.08) (xy 134.62 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06080b15-26a1-47a4-ad5c-93ad3ad6ad7a")
 	)
 	(wire
 		(pts
@@ -3217,16 +3423,6 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 132.08) (xy 68.58 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c90b1f7-231b-4023-acbe-5a87ac1afd72")
-	)
-	(wire
-		(pts
 			(xy 87.63 53.34) (xy 92.71 53.34)
 		)
 		(stroke
@@ -3264,6 +3460,26 @@
 			(type default)
 		)
 		(uuid "2930f938-953f-4fdb-b6c2-b28eb0b313e4")
+	)
+	(wire
+		(pts
+			(xy 173.99 35.56) (xy 173.99 36.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2bde8240-54e6-4bd6-b869-3890f90c988a")
+	)
+	(wire
+		(pts
+			(xy 57.15 87.63) (xy 60.96 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2c584073-3bad-46d5-8f2d-74965ef56d46")
 	)
 	(wire
 		(pts
@@ -3327,16 +3543,6 @@
 	)
 	(wire
 		(pts
-			(xy 53.34 87.63) (xy 60.96 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3ad46d60-11e4-46b1-9395-e7efde1523a7")
-	)
-	(wire
-		(pts
 			(xy 92.71 36.83) (xy 97.79 36.83)
 		)
 		(stroke
@@ -3344,6 +3550,16 @@
 			(type default)
 		)
 		(uuid "3b407bbe-bee4-4788-9cb9-f5558ffeeb64")
+	)
+	(wire
+		(pts
+			(xy 57.15 90.17) (xy 57.15 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4798062c-4b45-4620-a216-bd1b5e7569c9")
 	)
 	(wire
 		(pts
@@ -3357,6 +3573,16 @@
 	)
 	(wire
 		(pts
+			(xy 134.62 109.22) (xy 63.5 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "498addb2-a63c-4b8d-b57a-704e9d328b92")
+	)
+	(wire
+		(pts
 			(xy 165.1 48.26) (xy 165.1 53.34)
 		)
 		(stroke
@@ -3367,23 +3593,23 @@
 	)
 	(wire
 		(pts
-			(xy 170.18 36.83) (xy 172.72 36.83)
+			(xy 181.61 121.92) (xy 181.61 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4fd85be3-29d6-4281-82bf-c6aaf5d6187b")
+	)
+	(wire
+		(pts
+			(xy 170.18 36.83) (xy 173.99 36.83)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "51c91044-3f82-45fb-84e3-38a87a27db71")
-	)
-	(wire
-		(pts
-			(xy 68.58 137.16) (xy 77.47 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5332ef2a-562f-40bc-817e-5b207f99454e")
 	)
 	(wire
 		(pts
@@ -3394,6 +3620,16 @@
 			(type default)
 		)
 		(uuid "5a5f22ef-8cd5-4af0-93d1-f3b4e2d376d2")
+	)
+	(wire
+		(pts
+			(xy 173.99 36.83) (xy 176.53 36.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d3053bc-d3fd-43f3-9d36-749d9d0146f2")
 	)
 	(wire
 		(pts
@@ -3487,6 +3723,26 @@
 	)
 	(wire
 		(pts
+			(xy 57.15 93.98) (xy 57.15 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76e3b35b-13fa-4a3a-971d-97228044df5f")
+	)
+	(wire
+		(pts
+			(xy 63.5 109.22) (xy 63.5 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "770b5a2c-5c73-42da-9874-dd415fd09364")
+	)
+	(wire
+		(pts
 			(xy 204.47 146.05) (xy 214.63 146.05)
 		)
 		(stroke
@@ -3524,6 +3780,16 @@
 			(type default)
 		)
 		(uuid "799c3b4b-ac80-47ea-a96f-646182127b06")
+	)
+	(wire
+		(pts
+			(xy 181.61 123.19) (xy 181.61 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b1b6771-9647-4443-961a-76f126be9512")
 	)
 	(wire
 		(pts
@@ -3767,6 +4033,16 @@
 	)
 	(wire
 		(pts
+			(xy 181.61 109.22) (xy 181.61 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bfad82fc-9299-4492-934e-41ede0cfb850")
+	)
+	(wire
+		(pts
 			(xy 87.63 45.72) (xy 87.63 53.34)
 		)
 		(stroke
@@ -3794,6 +4070,16 @@
 			(type default)
 		)
 		(uuid "c44307b4-d04c-4c2c-bdc8-dfd951d66436")
+	)
+	(wire
+		(pts
+			(xy 63.5 95.25) (xy 57.15 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c721c5b9-c20b-4033-b40c-03bc64420261")
 	)
 	(wire
 		(pts
@@ -3947,6 +4233,16 @@
 	)
 	(wire
 		(pts
+			(xy 57.15 87.63) (xy 57.15 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eddd457e-1fac-47e5-b867-78776f5c2441")
+	)
+	(wire
+		(pts
 			(xy 127 46.99) (xy 118.11 46.99)
 		)
 		(stroke
@@ -3985,9 +4281,9 @@
 		)
 		(uuid "f693619f-d30e-4a54-b62b-251401e84189")
 	)
-	(global_label "VDD 6V"
-		(shape output)
-		(at 134.62 132.08 0)
+	(global_label "GND"
+		(shape input)
+		(at 249.08 149.75 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3995,9 +4291,57 @@
 			)
 			(justify left)
 		)
-		(uuid "2a01ead6-32bd-4ba0-a445-f22e2b1bc9ce")
+		(uuid "1404b9c9-b1da-4392-b4e9-9219d54be896")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 144.4995 132.08 0)
+			(at 258.96 149.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 139.7 154.94 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2b653049-a190-4964-8401-dde5791f8df2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 149.58 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 130.81 99.06 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2c3f67ff-868c-420e-9789-b811983cfe21")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 140.69 99.06 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4033,9 +4377,9 @@
 			)
 		)
 	)
-	(global_label "VDD 6V"
-		(shape output)
-		(at 181.61 124.46 90)
+	(global_label "GND"
+		(shape input)
+		(at 165.08 60 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4043,9 +4387,105 @@
 			)
 			(justify left)
 		)
-		(uuid "997a36e2-af98-483e-b778-0cafafb317ea")
+		(uuid "7e04909f-7a06-4f90-b99f-968300b92e6f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 181.61 114.5805 90)
+			(at 174.96 60 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "VDD 3V3"
+		(shape output)
+		(at 233.68 135.89 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "839e8c52-e5ab-46c9-8f87-d74b2558653a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 233.68 126.01 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "vREF"
+		(shape input)
+		(at 118.11 152.4 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "856ce8a5-84d5-48bd-970c-c98867b59817")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127.99 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "VBUS"
+		(shape input)
+		(at 249.08 143.4 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8ee6e470-9b39-4316-903f-697ec3bb6105")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 258.96 143.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "VDD 3V3"
+		(shape input)
+		(at 249.08 130.7 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "98bf65d7-123b-4cc4-83f4-4abb39c450f7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 258.96 130.7 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4059,17 +4499,17 @@
 	)
 	(global_label "VDD 6V"
 		(shape output)
-		(at 53.34 87.63 180)
+		(at 181.61 109.22 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
-		(uuid "a3e9d0ae-8ccf-4deb-904a-255fd1c373e3")
+		(uuid "997a36e2-af98-483e-b778-0cafafb317ea")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 43.4605 87.63 0)
+			(at 181.61 99.3405 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4077,35 +4517,110 @@
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 			)
 		)
 	)
-	(hierarchical_label "VDD 3V3"
-		(shape output)
-		(at 233.68 135.89 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "839e8c52-e5ab-46c9-8f87-d74b2558653a")
-	)
-	(hierarchical_label "vREF"
+	(global_label "VDD 6V"
 		(shape input)
-		(at 118.11 152.4 0)
+		(at 173.99 35.56 90)
+		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "856ce8a5-84d5-48bd-970c-c98867b59817")
+		(uuid "9cea550b-c55c-49e7-8404-ebc2391a48a3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.99 25.6805 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 	)
-	(hierarchical_label "VBUS"
+	(global_label "VDD 5V"
+		(shape input)
+		(at 130.81 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9fc00228-6e78-4bf6-8a38-fb6f6e3aa2cb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 140.69 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "VDD 6V"
+		(shape output)
+		(at 46.99 93.98 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a3e9d0ae-8ccf-4deb-904a-255fd1c373e3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 46.99 84.1005 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 249.08 124.35 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ad150b79-2b4a-448c-84d8-855b307a0eee")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 258.96 124.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "VBUS"
 		(shape output)
 		(at 186.69 124.46 90)
+		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4113,10 +4628,23 @@
 			(justify left)
 		)
 		(uuid "c76f19f9-cb37-4339-a464-69b9c2d12cd8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 186.69 114.58 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 	)
-	(hierarchical_label "VDD 5V"
-		(shape input)
+	(global_label "VDD 5V"
+		(shape output)
 		(at 102.87 87.63 0)
+		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4124,17 +4652,90 @@
 			(justify left)
 		)
 		(uuid "de4eb632-dcf1-4ad5-af24-0e72ad9e529a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 112.7495 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 	)
-	(hierarchical_label "REFEXT"
-		(shape output)
-		(at 68.58 132.08 90)
+	(global_label "GND"
+		(shape input)
+		(at 130.81 87.63 0)
+		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "fe0df845-c87c-4a43-af11-e5a7dbc41e51")
+		(uuid "e2711acf-1547-4e5f-baca-da95ce750ac0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 140.69 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 249.08 137.05 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e66ae7f6-4c10-4454-8ead-c04be4ed8e7b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 258.96 137.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "vREF"
+		(shape input)
+		(at 139.7 148.59 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ef8af73d-8bf7-4ccc-89f8-066c646124da")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 149.58 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 	)
 	(symbol
 		(lib_id "Device:C_Small")
@@ -4147,7 +4748,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "06097e49-fa89-4ea7-b22b-6734c944a9eb")
-		(property "Reference" "C7"
+		(property "Reference" "C4"
 			(at 146.812 39.624 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4202,6 +4803,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 152.4 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "87f230f2-d07b-4afd-8bfb-f7902615191f")
 		)
@@ -4211,7 +4823,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C7")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -4228,7 +4840,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0fce5561-f771-49ea-8aa1-e4dee2bfbe21")
-		(property "Reference" "C6"
+		(property "Reference" "C2"
 			(at 172.72 45.212 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4250,7 +4862,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 169.2148 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -4283,6 +4895,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 170.18 44.45 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "6a1f3342-a6e4-488f-a8a0-6701c645de4b")
 		)
@@ -4292,7 +4915,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C6")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -4388,7 +5011,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "156a60e9-a9dc-48ba-8aac-62b9acb4b2e6")
-		(property "Reference" "U9"
+		(property "Reference" "U2"
 			(at 95.25 121.92 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4408,7 +5031,7 @@
 				)
 			)
 		)
-		(property "Footprint" "custom_lib:SOIC127P599X175-8N"
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 			(at 95.25 137.16 0)
 			(hide yes)
 			(show_name no)
@@ -4539,6 +5162,17 @@
 				(justify bottom)
 			)
 		)
+		(property "KiLib_Generator" "package/gullwing"
+			(at 95.25 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "7"
 			(uuid "e344f952-d5f5-4aca-afa7-16b2b985112b")
 		)
@@ -4557,7 +5191,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "U9")
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -4574,7 +5208,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "198af04a-26a9-4579-997b-8f01e64411a5")
-		(property "Reference" "C4"
+		(property "Reference" "C3"
 			(at 137.16 42.672 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4627,6 +5261,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 137.16 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "9424ea47-7caa-42c2-a978-7edb0c378014")
 		)
@@ -4636,7 +5281,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C4")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -4653,7 +5298,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1d227ac2-0fb9-4efa-ae53-06954ac7ca26")
-		(property "Reference" "C5"
+		(property "Reference" "C1"
 			(at 172.72 43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4676,7 +5321,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 164.1348 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -4709,6 +5354,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 165.1 44.45 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "dfc91ce1-89e4-4a70-aa48-4da77e1c2350")
 		)
@@ -4718,7 +5374,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C5")
+					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -4747,7 +5403,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "VoltageDivider"
+		(property "Value" "1:1 matched"
 			(at 58.42 138.4299 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4758,7 +5414,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Package_SO:SOIC-8-1EP_3.9x4.9mm_P1.27mm_EP2.29x3mm"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
 			(at 73.025 137.16 90)
 			(hide yes)
 			(show_name no)
@@ -4781,6 +5437,17 @@
 			)
 		)
 		(property "Description" "Voltage divider"
+			(at 60.96 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "package/gullwing"
 			(at 60.96 137.16 0)
 			(hide yes)
 			(show_name no)
@@ -4921,7 +5588,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 147.32 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -4944,6 +5611,17 @@
 			)
 		)
 		(property "Description" "Resistor, small symbol"
+			(at 147.32 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 147.32 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -4981,7 +5659,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "322f6d67-756f-4580-846b-ef9e2ee9865d")
-		(property "Reference" "D6"
+		(property "Reference" "D2"
 			(at 189.23 127.3174 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5045,7 +5723,241 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "D6")
+					(reference "D2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 52.07 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "379000f7-14d3-453d-b836-3d68482aa5c1")
+		(property "Reference" "JP1"
+			(at 52.07 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SolderJumper_2_Open"
+			(at 52.07 97.79 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 52.07 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 52.07 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Solder Jumper, 2-pole, open"
+			(at 52.07 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "cb009386-04ab-4960-b0dc-b0b8fe47841f")
+		)
+		(pin "2"
+			(uuid "982992e5-d53b-4803-9ab1-26d6a80dda64")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "JP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 244 124.35 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3b09c814-5464-40fb-b97a-8c14cf6c4a00")
+		(property "Reference" "J11"
+			(at 243.365 119.27 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 243.365 121.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 244 124.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 244 124.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 244 124.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "4a646d2d-1d06-4048-b992-328e0b778ad3")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 244 149.75 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3c3c076b-4a89-4197-a034-103258ec0a98")
+		(property "Reference" "J13"
+			(at 243.365 144.67 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 243.365 147.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 244 149.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 244 149.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 244 149.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "35e7dcfa-7b35-4d9e-8c73-792dbf4492bf")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J13")
 					(unit 1)
 				)
 			)
@@ -5131,7 +6043,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x01_Pin")
-		(at 177.8 36.83 180)
+		(at 181.61 36.83 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5141,8 +6053,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5116b19b-9e96-4719-90c5-4e24df849bdb")
-		(property "Reference" "J2"
-			(at 177.165 31.75 0)
+		(property "Reference" "J1"
+			(at 180.975 31.75 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5152,7 +6064,7 @@
 			)
 		)
 		(property "Value" "6V"
-			(at 177.165 34.29 0)
+			(at 180.975 34.29 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5162,7 +6074,7 @@
 			)
 		)
 		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
-			(at 177.8 36.83 0)
+			(at 181.61 36.83 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5173,7 +6085,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 177.8 36.83 0)
+			(at 181.61 36.83 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5184,7 +6096,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 177.8 36.83 0)
+			(at 181.61 36.83 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5200,7 +6112,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "J2")
+					(reference "J1")
 					(unit 1)
 				)
 			)
@@ -5217,8 +6129,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "578f54b4-0a2e-489d-b5a4-1d64d81e18ba")
-		(property "Reference" "D5"
-			(at 174.752 127.508 90)
+		(property "Reference" "D3"
+			(at 176.784 127.508 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5229,7 +6141,7 @@
 			)
 		)
 		(property "Value" "Si diode 1A >= 40V"
-			(at 178.816 117.094 0)
+			(at 160.02 130.302 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5303,7 +6215,161 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "D5")
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 134.62 154.94 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "62c401d2-9a31-472f-a68a-31649b6bf415")
+		(property "Reference" "J6"
+			(at 133.985 149.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 133.985 152.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 134.62 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 134.62 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 134.62 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "97244b66-1702-40d5-9160-360ebcf5158e")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 176.53 123.19 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "64dc8255-002f-4381-ac93-8e9346fe05fa")
+		(property "Reference" "J15"
+			(at 175.895 118.11 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "6V"
+			(at 175.895 120.65 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 176.53 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 176.53 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1bb26713-e745-4f38-912f-6a06f80dab9f")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J15")
 					(unit 1)
 				)
 			)
@@ -5320,7 +6386,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "64e83361-dde6-48bf-a7de-9a98cc07a9f2")
-		(property "Reference" "C48"
+		(property "Reference" "C14"
 			(at 217.424 142.494 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5342,7 +6408,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 213.6648 138.43 0)
 			(hide yes)
 			(show_name no)
@@ -5375,6 +6441,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 214.63 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "0e6601f1-05b4-45c8-b80b-164ff111c9ec")
 		)
@@ -5384,7 +6461,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C48")
+					(reference "C14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 125.73 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "67aaf21a-ec3c-4e88-8d17-489e1d43dc43")
+		(property "Reference" "J8"
+			(at 125.095 88.9 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "5V"
+			(at 125.095 91.44 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 125.73 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 125.73 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c5d6e3eb-da8c-4008-929e-d83803e2e88c")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J8")
 					(unit 1)
 				)
 			)
@@ -5469,6 +6623,88 @@
 		)
 	)
 	(symbol
+		(lib_id "Jumper:SolderJumper_2_Open")
+		(at 181.61 116.84 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7564ab5d-c651-4b70-97df-cc1398fbdcb1")
+		(property "Reference" "JP2"
+			(at 184.15 115.5699 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "SolderJumper_2_Open"
+			(at 184.15 118.1099 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
+			(at 181.61 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 181.61 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Solder Jumper, 2-pole, open"
+			(at 181.61 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0733a955-aef6-42cf-8030-5327a777ce3f")
+		)
+		(pin "2"
+			(uuid "0fde64f8-c552-457d-9c0d-eaa03b917d21")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "JP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 189.23 143.51 0)
 		(unit 1)
@@ -5479,7 +6715,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "762c8a1a-d1a8-45a6-8bec-b3b5424a4205")
-		(property "Reference" "C47"
+		(property "Reference" "C12"
 			(at 189.992 145.796 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5501,7 +6737,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 190.1952 147.32 0)
 			(hide yes)
 			(show_name no)
@@ -5534,6 +6770,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 189.23 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "4b0cddd0-9c38-47e6-8ebd-af8d69f53ef4")
 		)
@@ -5543,7 +6790,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C47")
+					(reference "C12")
 					(unit 1)
 				)
 			)
@@ -5561,7 +6808,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7b57b8e4-249c-49a8-b127-bdb79bcecd8b")
-		(property "Reference" "U10"
+		(property "Reference" "U3"
 			(at 73.66 80.01 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5615,6 +6862,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "package/gullwing"
+			(at 73.66 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "810c6b21-d369-4af1-a562-92b95cc51131")
 		)
@@ -5633,7 +6891,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "U10")
+					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 244 143.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7ccf9d69-c2b2-4ab5-8bfc-a7aff3059483")
+		(property "Reference" "J12"
+			(at 243.365 138.32 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 243.365 140.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 244 143.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 244 143.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 244 143.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b929231d-bb72-4026-86e3-359332bd52a6")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J12")
 					(unit 1)
 				)
 			)
@@ -5718,6 +7053,83 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 160 60 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8174b166-44a9-4cc5-bf17-ba242987083e")
+		(property "Reference" "J2"
+			(at 159.365 54.92 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 159.365 57.46 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 160 60 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160 60 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 160 60 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "3dca890f-2bf8-4ed3-a4dc-c81d8c605661")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 92.71 41.91 0)
 		(unit 1)
@@ -5728,7 +7140,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "846f023d-6b89-4fc2-9e6f-3e7331bae284")
-		(property "Reference" "C2"
+		(property "Reference" "C6"
 			(at 81.28 41.656 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5751,7 +7163,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 93.6752 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -5784,6 +7196,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 92.71 41.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "94abd44b-fb3a-4a45-aba3-6e83ed013f66")
 		)
@@ -5793,7 +7216,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C2")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -5811,7 +7234,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "84f275bf-d2a6-4558-bb76-e6108bf8a2d0")
-		(property "Reference" "U5"
+		(property "Reference" "U1"
 			(at 118.11 29.21 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5831,7 +7254,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6"
+		(property "Footprint" "Package_TO_SOT_SMD:TSOT-23-6"
 			(at 119.38 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -5865,6 +7288,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "package/gullwing"
+			(at 118.11 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "4"
 			(uuid "13ca5449-431b-4477-93d0-6d6dfa52d93a")
 		)
@@ -5886,7 +7320,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "U5")
+					(reference "U1")
 					(unit 1)
 				)
 			)
@@ -5903,7 +7337,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "86f7b02a-c3aa-47ed-b5b2-9aa66f5a943f")
-		(property "Reference" "C3"
+		(property "Reference" "C5"
 			(at 98.806 44.704 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5958,6 +7392,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 97.79 41.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "d33878bd-f538-4332-82d6-9ef8e3d2de6f")
 		)
@@ -5967,7 +7412,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C3")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -6006,7 +7451,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 156.21 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -6029,6 +7474,17 @@
 			)
 		)
 		(property "Description" "Resistor, small symbol"
+			(at 156.21 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 156.21 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -6133,7 +7589,84 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C_Polarized_Small")
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 125.73 99.06 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8f799b9b-fc13-459f-89a2-17bd4260e625")
+		(property "Reference" "J10"
+			(at 125.095 93.98 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 125.095 96.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 125.73 99.06 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 99.06 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 125.73 99.06 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "741e34da-9abc-4dad-8b0c-ea31298d4714")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
 		(at 60.96 85.09 180)
 		(unit 1)
 		(body_style 1)
@@ -6143,7 +7676,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "95d07673-94eb-4b50-86f9-c2982eaecdf1")
-		(property "Reference" "C37"
+		(property "Reference" "C10"
 			(at 55.118 85.09 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6198,6 +7731,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 60.96 85.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "93b34876-ef88-452b-bdcb-fae768c5adc4")
 		)
@@ -6207,7 +7751,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C37")
+					(reference "C10")
 					(unit 1)
 				)
 			)
@@ -6224,7 +7768,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "99a4ce60-637b-49a0-b009-a49729fe2817")
-		(property "Reference" "C46"
+		(property "Reference" "C13"
 			(at 176.276 145.796 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6246,7 +7790,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 182.5752 147.32 0)
 			(hide yes)
 			(show_name no)
@@ -6279,6 +7823,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 181.61 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "12dcebc3-d6ae-401d-9a87-20a706bb0040")
 		)
@@ -6288,7 +7843,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C46")
+					(reference "C13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 244 130.7 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "99e872c7-f1a3-4ab4-82a4-cd68a5a84545")
+		(property "Reference" "J14"
+			(at 243.365 125.62 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "3V3"
+			(at 243.365 128.16 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 244 130.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 244 130.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 244 130.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bfc3bd3c-b158-44df-b826-dd2f9bd97af9")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J14")
 					(unit 1)
 				)
 			)
@@ -6384,7 +8016,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9ca9709b-20ee-49ab-bb85-ae36cff3ccbb")
-		(property "Reference" "C31"
+		(property "Reference" "C9"
 			(at 129.54 133.3435 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6406,7 +8038,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 127 134.62 0)
 			(hide yes)
 			(show_name no)
@@ -6439,6 +8071,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 127 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "833a0856-7432-4b23-b90a-ef643855d81e")
 		)
@@ -6448,7 +8091,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C31")
+					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -6466,7 +8109,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a6333e27-7483-4c9a-9bd6-085fc3fbe9c5")
-		(property "Reference" "U8"
+		(property "Reference" "U4"
 			(at 204.47 132.08 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6486,7 +8129,7 @@
 				)
 			)
 		)
-		(property "Footprint" "custom_lib:SOT230P700X180-4N"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
 			(at 201.93 134.62 0)
 			(hide yes)
 			(show_name no)
@@ -6531,7 +8174,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "U8")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -6539,7 +8182,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 238.76 149.86 90)
+		(at 238.76 149.86 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6549,7 +8192,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a90a5fa0-9d6e-4be7-bbfa-1cc80de2b654")
-		(property "Reference" "D7"
+		(property "Reference" "D1"
 			(at 242.57 150.1774 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6615,6 +8258,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 238.76 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "94e97b71-c7fa-4c70-94c4-78fc77412311")
 		)
@@ -6624,7 +8278,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "D7")
+					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -6641,7 +8295,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "aa08dd1f-afd6-4ba3-8a19-8ddafc34b2d2")
-		(property "Reference" "C1"
+		(property "Reference" "C7"
 			(at 81.28 39.878 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6663,7 +8317,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 88.5952 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -6696,6 +8350,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 87.63 41.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "5d42bd00-e6ae-4110-b6e4-8812602ed4e4")
 		)
@@ -6705,7 +8370,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C1")
+					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 52.07 90.17 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "aa2875b6-c95e-4f81-87ba-86354596e797")
+		(property "Reference" "J7"
+			(at 51.435 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "6V"
+			(at 51.435 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 52.07 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 52.07 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 52.07 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ab0062fa-b6fe-47da-a269-1f09e839a424")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J7")
 					(unit 1)
 				)
 			)
@@ -6723,7 +8465,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "afa67bce-5b5f-43e6-a60f-32e40b207dfc")
-		(property "Reference" "J1"
+		(property "Reference" "J3"
 			(at 48.895 31.75 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6733,7 +8475,7 @@
 				)
 			)
 		)
-		(property "Value" "V_{in}"
+		(property "Value" "12V"
 			(at 48.895 34.29 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6782,7 +8524,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "J1")
+					(reference "J3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 244 137.05 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b92b99c0-3007-4bc9-806f-9b4262ec12f4")
+		(property "Reference" "J16"
+			(at 243.365 131.97 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 243.365 134.51 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 244 137.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 244 137.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 244 137.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bec73c07-9037-4872-b3aa-2f8df599af76")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J16")
 					(unit 1)
 				)
 			)
@@ -6867,7 +8686,84 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C_Polarized_Small")
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 134.62 148.59 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c73e49eb-23d3-4e72-9332-a73c7f78600b")
+		(property "Reference" "J5"
+			(at 133.985 143.51 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "vREF"
+			(at 133.985 146.05 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 134.62 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 134.62 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 134.62 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5ba578fb-a8a8-43d6-babf-7c9170ea0b42")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
 		(at 93.98 90.17 0)
 		(unit 1)
 		(body_style 1)
@@ -6877,7 +8773,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ce3a8405-3044-4126-87e7-869de446e243")
-		(property "Reference" "C28"
+		(property "Reference" "C11"
 			(at 96.266 88.9 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6932,6 +8828,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 93.98 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "86224379-460d-4ea4-acef-bad2a9aa64a1")
 		)
@@ -6941,7 +8848,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C28")
+					(reference "C11")
 					(unit 1)
 				)
 			)
@@ -7114,7 +9021,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dcd27000-fc2d-4888-a1ba-5b5da2ecc360")
-		(property "Reference" "C49"
+		(property "Reference" "C15"
 			(at 230.378 142.748 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7136,7 +9043,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 228.2952 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -7169,6 +9076,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 227.33 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "eaf9ff1c-1740-40d9-b163-aa33a9f044e5")
 		)
@@ -7178,7 +9096,84 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C49")
+					(reference "C15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x01_Pin")
+		(at 125.73 87.63 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dddce836-4031-4ad8-bec7-b0779ccad89f")
+		(property "Reference" "J9"
+			(at 125.095 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 125.095 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_Wire:SolderWirePad_1x01_SMD_1x2mm"
+			(at 125.73 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x01, script generated"
+			(at 125.73 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a0ec1266-e786-4c19-9685-de0b30a022d4")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "J9")
 					(unit 1)
 				)
 			)
@@ -7196,7 +9191,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e235b1e3-36c0-4766-883c-ef62367967e4")
-		(property "Reference" "J3"
+		(property "Reference" "J4"
 			(at 125.73 59.0549 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7257,7 +9252,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "J3")
+					(reference "J4")
 					(unit 1)
 				)
 			)
@@ -7353,7 +9348,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f107497b-952d-45da-9195-bda3526a1a2c")
-		(property "Reference" "R25"
+		(property "Reference" "R3"
 			(at 241.554 142.24 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7373,7 +9368,7 @@
 				)
 			)
 		)
-		(property "Footprint" "custom_lib:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 240.538 142.24 90)
 			(hide yes)
 			(show_name no)
@@ -7406,6 +9401,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 238.76 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "7ef9f65e-80f9-48db-b705-546cc974c444")
 		)
@@ -7415,7 +9421,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "R25")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -7433,7 +9439,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f4d17690-7282-4322-a2cd-92fa8a5fcc9a")
-		(property "Reference" "C45"
+		(property "Reference" "C8"
 			(at 119.38 133.3435 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7455,7 +9461,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "custom_lib:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 116.84 134.62 0)
 			(hide yes)
 			(show_name no)
@@ -7488,6 +9494,17 @@
 				)
 			)
 		)
+		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "de6736c3-994c-46fb-8fd9-d3c7effd7608")
 		)
@@ -7497,7 +9514,7 @@
 		(instances
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
-					(reference "C45")
+					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -7558,6 +9575,17 @@
 			)
 		)
 		(property "Description" "Inductor"
+			(at 146.05 36.83 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "inductor/SMD"
 			(at 146.05 36.83 0)
 			(hide yes)
 			(show_name no)
