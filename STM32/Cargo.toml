@@ -1,0 +1,58 @@
+[package]
+authors = ["Emil K <29043737+Cosmao@users.noreply.github.com>"]
+edition = "2021"
+name = "das-boot"
+version = "0.1.0"
+publish = false
+
+[dependencies]
+# --- Embassy ---
+# NOTE: change "stm32f411ce" to YOUR exact part number (e.g. "stm32f401cc").
+# Run `cargo build` and the error message lists every valid chip feature.
+embassy-stm32 = { version = "0.6.0", features = [
+    "defmt",
+    "stm32f411ce",
+    "memory-x",        # auto-generates memory.x from chip metadata (no build.rs needed)
+    "time-driver-any", # let the HAL pick a timer for embassy-time
+    "exti",            # external interrupt / async GPIO support
+] }
+embassy-executor = { version = "0.10.0", features = [
+    "defmt",
+    "platform-cortex-m", # was "arch-cortex-m" in older releases
+    "executor-thread",
+    "executor-interrupt",
+] }
+embassy-time = { version = "0.5.1", features = [
+    "defmt",
+    "defmt-timestamp-uptime",
+    "tick-hz-1_000_000", # 1 MHz tick
+] }
+embassy-sync = { version = "0.8.0", features = ["defmt"] }
+embassy-futures = "0.1.2"
+
+# --- Logging / panic over RTT ---
+defmt = "1.1.0"
+defmt-rtt = "1.2.0"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+
+# --- Cortex-M runtime ---
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7.5"
+
+# Smaller, faster firmware. Debug symbols are kept (they live on the host, not the chip).
+[profile.release]
+codegen-units = 1
+debug = 2
+lto = "fat"
+opt-level = "s"
+
+# Your own code at -O0 so breakpoints bind to exact source lines (probe-rs needs
+# unoptimized line info). Dependencies stay optimized below, so the firmware stays
+# small and the Embassy runtime stays fast.
+[profile.dev]
+opt-level = 0
+debug = 2
+
+# Everything except this crate (embassy, cortex-m, …) keeps size/speed optimization.
+[profile.dev.package."*"]
+opt-level = "s"
