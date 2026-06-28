@@ -29,6 +29,7 @@ embassy-time = { version = "0.5.1", features = [
 ] }
 embassy-sync = { version = "0.8.0", features = ["defmt"] }
 embassy-futures = "0.1.2"
+embassy-usb = "0.6.0"
 
 # --- Logging / panic over RTT ---
 defmt = "1.1.0"
