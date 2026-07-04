@@ -1,22 +1,22 @@
 #![no_std]
 #![no_main]
 
-use defmt::{info, unwrap};
+use defmt::info;
 use embassy_executor::Spawner;
+use embassy_futures::join::join;
 use embassy_stm32::{
     bind_interrupts,
     gpio::{Level, Output, Speed},
-    peripherals,
+    peripherals::{self},
     rcc::{
         APBPrescaler, Hse, HseMode, Pll, PllMul, PllPDiv, PllPreDiv, PllQDiv, PllSource, Sysclk,
     },
     time::mhz,
-    usb::{self, Driver, Instance},
+    usb::{self, Driver},
+    Peri,
 };
 use embassy_time::Timer;
-use embassy_usb::{
-    class::cdc_acm::CdcAcmClass, class::cdc_acm::State, driver::EndpointError, UsbDevice,
-};
+use embassy_usb::{class::cdc_acm::CdcAcmClass, class::cdc_acm::State, driver::EndpointError};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -65,12 +65,20 @@ async fn main(_spawner: Spawner) {
         ])
         .unwrap(),
     );
+    _spawner.must_spawn(usb_task(p.USB_OTG_FS, p.PA12, p.PA11));
+}
 
+#[embassy_executor::task]
+async fn usb_task(
+    up: Peri<'static, peripherals::USB_OTG_FS>,
+    dp: Peri<'static, peripherals::PA12>,
+    dm: Peri<'static, peripherals::PA11>,
+) -> ! {
     static EP_OUT_BUFFER: StaticCell<[u8; 256]> = StaticCell::new();
     let ep_out_buff = EP_OUT_BUFFER.init([0u8; 256]);
     let config = embassy_stm32::usb::Config::default();
 
-    let driver = Driver::new_fs(p.USB_OTG_FS, Irqs, p.PA12, p.PA11, ep_out_buff, config);
+    let driver = Driver::new_fs(up, Irqs, dp, dm, ep_out_buff, config);
     let usb_conf = embassy_usb::Config::new(0x0483, 0x5740);
     let mut builder = {
         static CONFIG_DESCRIPTOR: StaticCell<[u8; 256]> = StaticCell::new();
@@ -93,23 +101,18 @@ async fn main(_spawner: Spawner) {
         CdcAcmClass::new(&mut builder, state, 64)
     };
 
-    let usb = builder.build();
-    _spawner.spawn(unwrap!(usb_task(usb)));
-
-    loop {
-        class.wait_connection().await;
-        info!("Connected");
-        let _ = echo(&mut class).await;
-        info!("Disconnected");
-    }
-}
-
-type MyUsbDriver = Driver<'static, peripherals::USB_OTG_FS>;
-type MyUsbDevice = UsbDevice<'static, MyUsbDriver>;
-
-#[embassy_executor::task]
-async fn usb_task(mut usb: MyUsbDevice) -> ! {
-    usb.run().await
+    let mut device = builder.build();
+    let run_future = device.run();
+    let echo_future = async {
+        loop {
+            class.wait_connection().await;
+            info!("Connected");
+            let _ = echo(&mut class).await;
+            info!("Disconnected");
+        }
+    };
+    join(run_future, echo_future).await;
+    unreachable!();
 }
 
 struct Disconnected {}
@@ -123,8 +126,8 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
-async fn echo<'d, T: Instance + 'd>(
-    class: &mut CdcAcmClass<'d, Driver<'d, T>>,
+async fn echo(
+    class: &mut CdcAcmClass<'static, Driver<'static, peripherals::USB_OTG_FS>>,
 ) -> Result<(), Disconnected> {
     let mut buf = [0; 64];
     loop {
