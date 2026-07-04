@@ -30,6 +30,7 @@ embassy-time = { version = "0.5.1", features = [
 embassy-sync = { version = "0.8.0", features = ["defmt"] }
 embassy-futures = "0.1.2"
 embassy-usb = "0.6.0"
+static_cell = "2"        # &'static mut buffers for USB descriptors / CDC state
 
 # --- Logging / panic over RTT ---
 defmt = "1.1.0"
