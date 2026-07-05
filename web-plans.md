@@ -572,68 +572,7 @@ Typical control flow:
 13. Frontend updates UI
 ```
 
-## File structure
-
-Proposed structure if using C#:
-
-```text
-surface/
-├── index.html
-├── style.css
-├── main.js
-└── server/
-    ├── DasBoot.Surface.csproj
-    ├── Program.cs
-    ├── WebSockets/
-    │   └── WebSocketHub.cs
-    ├── Control/
-    │   ├── PilotManager.cs
-    │   └── ControlState.cs
-    ├── Stm32/
-    │   ├── Stm32Link.cs
-    │   └── Stm32Messages.cs
-    ├── Telemetry/
-    │   ├── TelemetryBroadcaster.cs
-    │   └── TelemetryLogger.cs
-    └── appsettings.json
-```
-
-Simpler early v1 structure:
-
-```text
-surface/
-├── index.html
-├── style.css
-├── main.js
-└── server/
-    ├── Program.cs
-    ├── PilotManager.cs
-    ├── ControlState.cs
-    ├── Stm32Link.cs
-    └── DasBoot.Surface.csproj
-```
-
-If using C++ instead:
-
-```text
-surface/
-├── index.html
-├── style.css
-├── main.js
-└── server/
-    ├── src/
-    │   ├── main.cpp
-    │   ├── websocket.cpp
-    │   ├── pilot.cpp
-    │   ├── control.cpp
-    │   ├── stm32_link.cpp
-    │   └── telemetry.cpp
-    └── CMakeLists.txt
-```
-
 ## MVP build order
-
-Recommended implementation order:
 
 1. Static dashboard loads from RPi
 2. WebSocket connects and shows connection status
@@ -651,10 +590,9 @@ Recommended implementation order:
 
 ## Open questions / TODO
 
-* Backend language: C# Minimal API or C++?
-* Final RPi model: Zero 2 W, 4B, or CM4?
+* Final RPi model: Zero 2 W or 4B?
 * STM32 link path: stable `/dev/ttyACMx` or udev alias?
-* Pilot token disconnect timeout: 1s, 2s, or 3s?
+* Pilot token disconnect timeout duration
 * Gamepad mapping: Xbox, PS, or generic first?
 * Keyboard fallback keys
 * Touch joystick layout
