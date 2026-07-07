@@ -215,6 +215,7 @@ dependencies = [
  "embassy-sync",
  "embassy-time",
  "embassy-usb",
+ "embedded-io-async 0.7.0",
  "panic-probe",
  "static_cell",
 ]
@@ -488,6 +489,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a25746d8b152b72fbf2a217f489a083dbbe243f281f09184a1f2cfbe9bbb245f"
 dependencies = [
  "bitflags 2.13.0",
+ "defmt 1.1.0",
  "embassy-futures",
  "embassy-net-driver-channel",
  "embassy-sync",
