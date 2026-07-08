@@ -51,6 +51,9 @@ panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7.5"
 
+# -- Crc16 --
+crc16 = "0.4"
+
 # Smaller, faster firmware. Debug symbols are kept (they live on the host, not the chip).
 [profile.release]
 codegen-units = 1

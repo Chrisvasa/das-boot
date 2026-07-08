@@ -10,7 +10,7 @@ use embassy_stm32::{
     time::mhz,
 };
 
-use crate::parser::echo;
+use crate::parser::communication_task;
 
 use {defmt_rtt as _, panic_probe as _};
 
@@ -48,5 +48,5 @@ async fn main(_spawner: Spawner) {
     let (rx, tx) =
         transport::setup(p.USART1, p.PA10, p.PA9, p.DMA2_CH7, p.DMA2_CH2, _spawner).await;
 
-    _spawner.spawn(echo(rx, tx).unwrap());
+    _spawner.spawn(communication_task(rx, tx).unwrap());
 }
