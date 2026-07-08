@@ -54,6 +54,9 @@ cortex-m-rt = "0.7.5"
 # -- Crc16 --
 crc16 = "0.4"
 
+# -- Vector --
+heapless = "0.8"
+
 # Smaller, faster firmware. Debug symbols are kept (they live on the host, not the chip).
 [profile.release]
 codegen-units = 1
