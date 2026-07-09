@@ -57,6 +57,9 @@ crc16 = "0.4"
 # -- Vector --
 heapless = "0.8"
 
+# -- Enum representation --
+num_enum = { version = "0.7", default-features = false }
+
 # Smaller, faster firmware. Debug symbols are kept (they live on the host, not the chip).
 [profile.release]
 codegen-units = 1

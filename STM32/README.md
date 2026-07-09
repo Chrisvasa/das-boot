@@ -4,7 +4,7 @@ Embassy async firmware for a WeAct "Black Pill" (STM32F411CE). Talks to the host
 (Raspberry Pi) over **UART on the GPIO header** in production; USB CDC-ACM
 (`/dev/ttyACMx`) is kept as a bench/dev console.
 
-## Command Protocol (draft v0.2)
+## Command Protocol (draft v0.3)
 
 ### Transport
 - Primary: 3.3 V UART, point-to-point (STM TX↔Pi RX, RX↔TX, GND). No bus address.
@@ -32,34 +32,43 @@ Embassy async firmware for a WeAct "Black Pill" (STM32F411CE). Talks to the host
 - Coverage: the **entire message including the sync byte** — every byte from
   `sync` through the last payload byte (i.e. all bytes before the crc field).
 - On the wire: little-endian (low byte first), consistent with `txn`.
-- Rust: `crc` crate `Crc::<u16>::new(&crc::CRC_16_MODBUS)`. Host (Python):
-  `crcmod`/`libscrc` MODBUS — must match byte-for-byte on both ends.
+- Device: `crc16` crate, `crc16::State::<crc16::MODBUS>::calculate(...)`. Host: any
+  CRC-16/MODBUS impl (the `tools/proto_test.py` tester implements it inline).
+  Must match byte-for-byte on both ends.
 
-### Function codes (one enum, must be unique)
+### Function codes
 ```
-Control (replies only):
-  0x06  ACK    accepted into queue     (len = 0)
+Control (device → host replies):
+  0x06  ACK    command accepted        (len = 0)
   0x15  NACK   rejected                (len = 1, payload = reason)
-Commands / queries (0x10+):
-  0x20  GET_BATTERY
-  0x21  SET_SERVO
-  0x22  ...
+Commands (host → device):
+  0x20  SET_SERVO
+  (battery / engine commands: TBD)
 
-NACK reasons: 0x01 queue_full  0x02 bad_func  0x03 bad_length  0x04 internal
+NACK reasons:
+  0x05  invalid_func      (unknown command code)
+  0x06  invalid_payload
 ```
+Control and command codes are distinct value ranges. An *inbound* control code
+(host sending ACK/NACK) is treated as a no-op — the device sends no reply.
 
 ### Exchange model (per txn)
+**Implemented now:**
 1. Host sends a request frame.
-2. Device replies immediately with the queue result:
-   - `ACK`  `[AB][txn][0x06][0]` — queued, processing
-   - `NACK` `[AB][txn][0x15][1][reason]` — not queued (terminal)
-3. On completion, device sends exactly ONE terminal reply using the **original**
-   func code (self-describing):
-   - data: `[AB][txn][<orig func>][len][payload]`
-   - done: `[AB][txn][<orig func>][0]` — completed, no data
+2. Device replies immediately with the acceptance result:
+   - `ACK`  `[AB][txn][0x06][0]` — command accepted
+   - `NACK` `[AB][txn][0x15][1][reason]` — rejected (e.g. unknown func)
+   - inbound control codes and bad-CRC frames get **no reply**.
 
-Every txn ends with exactly one terminal reply (data / done / NACK).
-(Frame examples above omit the trailing `crc16` for brevity — it's always present.)
+**Planned (needs command dispatch):**
+3. On completion, device sends one terminal reply using the **original** func
+   code (self-describing):
+   - data: `[AB][txn][<orig func>][len][payload]`
+   - done: `[AB][txn][<orig func>][0]`
+
+   so each txn ends with exactly one terminal reply (data / done / NACK).
+
+(Frame examples omit the trailing `crc16` for brevity — it's always present.)
 
 ### Robustness
 - CRC fail → **drop silently, no reply** (txn/func can't be trusted). Then resync.
@@ -68,15 +77,21 @@ Every txn ends with exactly one terminal reply (data / done / NACK).
   occur inside a payload — CRC is the real alignment check, not the sync byte.
 - NACK is only sent for frames that **pass CRC** but fail semantics (bad func,
   queue full, …) — those have a trustworthy txn to address the reply to.
-- Mid-frame stall watchdog: if bytes stop arriving mid-frame for N ms, drop +
-  resync. (Framing itself is by `len`, not timing — the timeout is only a safety.)
-- Device clears its RX state on each new host connection.
 - txn is host-owned; device only echoes it.
+- _(planned)_ Mid-frame stall watchdog: drop + resync if a frame stalls mid-way.
+- _(planned)_ Clear RX state on each new host connection.
 
 ### Open questions
 - Final func codes per subsystem (battery / servo / engine).
 - Any commands need progress/streaming replies, or is ACK + terminal enough?
 - Max payload size actually needed (drives buffer sizing).
+
+## Implementation
+- Transport is a build feature: `usb` (default, CDC-ACM) or `uart`
+  (`--no-default-features --features uart`). Both expose the same `Reader`/`Writer`
+  to a transport-agnostic parser — see `src/transport.rs`, `src/parser.rs`.
+- Parser design notes: `RX_PARSER.md`.
+- Protocol tester (sends frames, asserts ACK/NACK replies): `tools/proto_test.py`.
 
 ## Toolchain
 See [memory: embedded-debug-setup] — probe-rs 0.31 + clone ST-Link. Always

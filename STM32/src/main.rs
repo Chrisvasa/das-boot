@@ -18,7 +18,7 @@ mod parser;
 mod transport;
 
 #[embassy_executor::main]
-async fn main(_spawner: Spawner) {
+async fn main(spawner: Spawner) {
     fn clock_cfg() -> embassy_stm32::Config {
         let mut conf = embassy_stm32::Config::default();
         conf.rcc.hse = Some(Hse {
@@ -43,10 +43,9 @@ async fn main(_spawner: Spawner) {
     info!("{} booting!", NAME);
 
     #[cfg(feature = "usb")]
-    let (rx, tx) = transport::setup(p.USB_OTG_FS, p.PA12, p.PA11, _spawner).await;
+    let (rx, tx) = transport::setup(p.USB_OTG_FS, p.PA12, p.PA11, spawner).await;
     #[cfg(feature = "uart")]
-    let (rx, tx) =
-        transport::setup(p.USART1, p.PA10, p.PA9, p.DMA2_CH7, p.DMA2_CH2, _spawner).await;
+    let (rx, tx) = transport::setup(p.USART1, p.PA10, p.PA9, p.DMA2_CH7, p.DMA2_CH2, spawner).await;
 
-    _spawner.spawn(communication_task(rx, tx).unwrap());
+    spawner.spawn(defmt::unwrap!(communication_task(rx, tx)));
 }

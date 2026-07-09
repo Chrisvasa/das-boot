@@ -3,6 +3,11 @@
 Notes for implementing the UART receive path. Protocol frame is defined in
 [README.md](README.md). This is the firmware-internal parsing strategy.
 
+**Status:** the linear parse buffer, seek/resync, CRC check and ACK/NACK are
+implemented (`src/parser.rs`) and covered by `tools/proto_test.py`. The DMA ring
+is the UART capture stage only (USB uses a `BufferedReceiver`). The mid-frame
+**stall watchdog is planned, not yet implemented.**
+
 ## Pipeline
 ```
 UART ─► RingBufferedUartRx (DMA)  ─►  drain chunks  ─►  linear parse buffer  ─►  state machine

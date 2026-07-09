@@ -23,7 +23,7 @@ pub async fn setup(
     _spawner: Spawner,
 ) -> (Reader, Writer) {
     let config = Config::default();
-    let uart = Uart::new(uart, rx_pin, tx_pin, tx_dma, rx_dma, Irqs, config).unwrap();
+    let uart = defmt::unwrap!(Uart::new(uart, rx_pin, tx_pin, tx_dma, rx_dma, Irqs, config));
     let (tx, rx) = uart.split();
     static RX_RING: StaticCell<[u8; 256]> = StaticCell::new();
     let mut rx = rx.into_ring_buffered(RX_RING.init([0u8; 256]));

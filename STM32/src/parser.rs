@@ -1,6 +1,6 @@
 use crate::transport;
 use crc16::*;
-use defmt::{info, warn};
+use defmt::warn;
 use embassy_futures::join::join;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::Timer;
@@ -12,53 +12,40 @@ enum ReadState {
     Parsing,
 }
 
-enum SeekResult {
-    Found,
-    NotFound,
-}
-
 enum ParseResult {
-    Ok,
+    Ok(MsgInfo),
     InvalidCrc,
     Incomplete,
 }
 
-pub enum FunctionCodes {
+pub enum FrameError {
+    TooLong,
+}
+
+#[derive(num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
+#[repr(u8)]
+pub enum ControlCodes {
     Ack = 0x06,
     Nack = 0x15,
+}
+
+#[derive(num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
+#[repr(u8)]
+pub enum FunctionCodes {
     SetServo = 0x20,
 }
 
-impl FunctionCodes {
-    fn from_u8(b: u8) -> Option<FunctionCodes> {
-        match b {
-            0x06 => Some(FunctionCodes::Ack),
-            0x15 => Some(FunctionCodes::Nack),
-            0x20 => Some(FunctionCodes::SetServo),
-            _ => None,
-        }
-    }
-}
-
+#[repr(u8)]
 pub enum ErrorCodes {
-    InvalidFunc,
-    InvalidPayload,
-}
-
-impl ErrorCodes {
-    fn as_payload(&self) -> &'static [u8] {
-        match self {
-            ErrorCodes::InvalidFunc => &[0x05],
-            ErrorCodes::InvalidPayload => &[0x06],
-        }
-    }
+    InvalidFunc = 0x05,
+    _InvalidPayload = 0x06,
 }
 
 const SYNC: u8 = 0xAB;
 const OFFSET_TXN: usize = 1;
 const OFFSET_FUNC: usize = 3;
 const OFFSET_LEN: usize = 4;
-const OFFSET_PAYLOAD: usize = 5;
+const _OFFSET_PAYLOAD: usize = 5;
 const HEADER_LEN: usize = 5;
 const CRC_LEN: usize = 2;
 const OVERHEAD: usize = HEADER_LEN + CRC_LEN;
@@ -88,16 +75,6 @@ struct MsgInfo {
     len: u8,
 }
 
-impl MsgInfo {
-    fn new() -> Self {
-        Self {
-            txn: 0,
-            func: 0,
-            len: 0,
-        }
-    }
-}
-
 #[embassy_executor::task]
 pub async fn communication_task(rx: transport::Reader, tx: transport::Writer) -> ! {
     let out = write_outgoing(tx);
@@ -115,17 +92,24 @@ async fn write_outgoing<W: Write>(mut tx: W) -> ! {
     }
 }
 
-pub fn create_msg(txn: u16, func: FunctionCodes, payload: Option<&[u8]>) -> Vec<u8, MAX_MSG_SIZE> {
+pub fn create_msg(
+    txn: u16,
+    func: u8,
+    payload: Option<&[u8]>,
+) -> Result<Vec<u8, MAX_MSG_SIZE>, FrameError> {
     let payload = payload.unwrap_or(&[]);
-    let mut resp = Vec::new();
-    resp.push(SYNC).unwrap();
-    resp.extend_from_slice(&txn.to_le_bytes()).unwrap();
-    resp.push(func as u8).unwrap();
-    resp.push(payload.len() as u8).unwrap();
-    resp.extend_from_slice(payload).unwrap();
-    let crc16 = calculate_crc(&resp);
-    resp.extend_from_slice(&crc16.to_le_bytes()).unwrap();
-    resp
+    if payload.len() > u8::MAX as usize {
+        return Err(FrameError::TooLong);
+    }
+    let mut msg = Vec::new();
+    defmt::unwrap!(msg.push(SYNC));
+    defmt::unwrap!(msg.extend_from_slice(&txn.to_le_bytes()));
+    defmt::unwrap!(msg.push(func));
+    defmt::unwrap!(msg.push(payload.len() as u8));
+    defmt::unwrap!(msg.extend_from_slice(payload));
+    let crc16 = calculate_crc(&msg);
+    defmt::unwrap!(msg.extend_from_slice(&crc16.to_le_bytes()));
+    Ok(msg)
 }
 
 async fn read_incoming<R: Read>(mut rx: R) -> ! {
@@ -141,87 +125,79 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
         }
         loop {
             match parser.state {
-                ReadState::Seeking => match seek(&mut parser) {
-                    SeekResult::Found => {}
-                    SeekResult::NotFound => {
-                        //NOTE: Should be more efficient than to memset, since we keep track
-                        //of this always
+                ReadState::Seeking => {
+                    if !seek(&mut parser) {
                         parser.buff_len = 0;
                         break;
                     }
-                },
+                }
                 ReadState::Parsing => match parse(&mut parser) {
-                    (ParseResult::Ok, msg) => {
-                        let (code, payload) = match FunctionCodes::from_u8(msg.func) {
-                            Some(FunctionCodes::Ack) => (None, None),
-                            Some(FunctionCodes::Nack) => (None, None),
-                            Some(_) => (Some(FunctionCodes::Ack), None),
-                            None => (
-                                Some(FunctionCodes::Nack),
-                                Some(ErrorCodes::InvalidFunc.as_payload()),
-                            ),
-                        };
-
-                        if let Some(code) = code {
-                            let _ = OUTBOUND.send(create_msg(msg.txn, code, payload)).await;
+                    ParseResult::Ok(msg) => {
+                        if ControlCodes::try_from(msg.func).is_err() {
+                            let reply = match FunctionCodes::try_from(msg.func) {
+                                Ok(_) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
+                                Err(_) => create_msg(
+                                    msg.txn,
+                                    ControlCodes::Nack.into(),
+                                    Some(&[ErrorCodes::InvalidFunc as u8]),
+                                ),
+                            };
+                            if let Ok(msg) = reply {
+                                OUTBOUND.send(msg).await
+                            };
                         }
-
                         let total_msg_size: usize = msg.len as usize + OVERHEAD;
-
                         parser.buff.copy_within(total_msg_size..parser.buff_len, 0);
                         parser.state = ReadState::Seeking;
                         parser.buff_len -= total_msg_size;
                     }
-                    (ParseResult::InvalidCrc, _) => {
+                    ParseResult::InvalidCrc => {
                         parser.buff.copy_within(1..parser.buff_len, 0);
                         parser.buff_len -= 1;
                         parser.state = ReadState::Seeking
                     }
-                    (ParseResult::Incomplete, _) => break,
+                    ParseResult::Incomplete => break,
                 },
             }
         }
     }
 }
 
-fn seek(parser: &mut Parser) -> SeekResult {
+fn seek(parser: &mut Parser) -> bool {
     for i in 0..parser.buff_len {
         if parser.buff[i] == SYNC {
             parser.state = ReadState::Parsing;
             parser.buff.copy_within(i..parser.buff_len, 0);
             parser.buff_len -= i;
-            return SeekResult::Found;
+            return true;
         }
     }
-    return SeekResult::NotFound;
+    false
 }
 
-//TODO: instead of usize return a struct with the relevant values for queueing (txn, func, payload)
-fn parse(parser: &mut Parser) -> (ParseResult, MsgInfo) {
-    let mut msg = MsgInfo::new();
+fn parse(parser: &mut Parser) -> ParseResult {
     if parser.buff_len < HEADER_LEN {
-        return (ParseResult::Incomplete, msg);
+        return ParseResult::Incomplete;
     }
-    msg.txn = u16::from_le_bytes([parser.buff[OFFSET_TXN], parser.buff[OFFSET_TXN + 1]]);
-    msg.func = parser.buff[OFFSET_FUNC];
-    msg.len = parser.buff[OFFSET_LEN];
-    let len_check: usize = msg.len as usize + OVERHEAD;
+    let len_check: usize = parser.buff[OFFSET_LEN] as usize + OVERHEAD;
     if parser.buff_len < len_check {
-        return (ParseResult::Incomplete, msg);
+        return ParseResult::Incomplete;
     }
+
+    let msg = MsgInfo {
+        txn: u16::from_le_bytes([parser.buff[OFFSET_TXN], parser.buff[OFFSET_TXN + 1]]),
+        func: parser.buff[OFFSET_FUNC],
+        len: parser.buff[OFFSET_LEN],
+    };
 
     let crc = u16::from_le_bytes([parser.buff[len_check - CRC_LEN], parser.buff[len_check - 1]]);
 
-    match verify_crc(parser, 0, len_check - CRC_LEN, crc) {
-        true => (ParseResult::Ok, msg),
-        false => (ParseResult::InvalidCrc, msg),
+    if calculate_crc(&parser.buff[..len_check - CRC_LEN]) == crc {
+        return ParseResult::Ok(msg);
     }
-}
-
-fn verify_crc(parser: &Parser, start: usize, end: usize, crc: u16) -> bool {
-    State::<MODBUS>::calculate(&parser.buff[start..end]) == crc
+    ParseResult::InvalidCrc
 }
 
 fn calculate_crc(data: &[u8]) -> u16 {
-    State::<MODBUS>::calculate(&data)
+    State::<MODBUS>::calculate(data)
 }
