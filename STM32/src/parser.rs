@@ -1,4 +1,4 @@
-use crate::transport;
+use crate::{pwm::handle_set_servo, transport};
 use crc16::*;
 use defmt::warn;
 use embassy_futures::join::join;
@@ -33,25 +33,30 @@ pub enum ControlCodes {
 #[repr(u8)]
 pub enum FunctionCodes {
     SetServo = 0x20,
+    GetServo = 0x21,
 }
 
+#[allow(dead_code)]
 #[repr(u8)]
 pub enum ErrorCodes {
     InvalidFunc = 0x05,
-    _InvalidPayload = 0x06,
+    InvalidPayload = 0x06,
+    InvalidPayloadLen = 0x07,
+    InvalidServoID = 0x08,
+    InvalidServoDuty = 0x09,
 }
 
 const SYNC: u8 = 0xAB;
 const OFFSET_TXN: usize = 1;
 const OFFSET_FUNC: usize = 3;
 const OFFSET_LEN: usize = 4;
-const _OFFSET_PAYLOAD: usize = 5;
+const OFFSET_PAYLOAD: usize = 5;
 const HEADER_LEN: usize = 5;
 const CRC_LEN: usize = 2;
 const OVERHEAD: usize = HEADER_LEN + CRC_LEN;
 const MAX_MSG_SIZE: usize = u8::MAX as usize + OVERHEAD;
 
-static OUTBOUND: Channel<CriticalSectionRawMutex, Vec<u8, MAX_MSG_SIZE>, 8> = Channel::new();
+pub static OUTBOUND: Channel<CriticalSectionRawMutex, Vec<u8, MAX_MSG_SIZE>, 8> = Channel::new();
 
 struct Parser {
     state: ReadState,
@@ -133,7 +138,9 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
                 }
                 ReadState::Parsing => match parse(&mut parser) {
                     ParseResult::Ok(msg) => {
-                        dispatch(&msg).await;
+                        let payload =
+                            &parser.buff[OFFSET_PAYLOAD..OFFSET_PAYLOAD + msg.len as usize];
+                        validate_dispatch(&msg, payload).await;
                         let total_msg_size: usize = msg.len as usize + OVERHEAD;
                         parser.buff.copy_within(total_msg_size..parser.buff_len, 0);
                         parser.state = ReadState::Seeking;
@@ -151,20 +158,26 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
     }
 }
 
-async fn dispatch(msg: &MsgInfo) {
-    if ControlCodes::try_from(msg.func).is_err() {
-        let reply = match FunctionCodes::try_from(msg.func) {
-            Ok(_) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
-            Err(_) => create_msg(
-                msg.txn,
-                ControlCodes::Nack.into(),
-                Some(&[ErrorCodes::InvalidFunc as u8]),
-            ),
-        };
-        //TODO: Dispatch here
-        if let Ok(msg) = reply {
-            OUTBOUND.send(msg).await
-        };
+async fn validate_dispatch(msg: &MsgInfo, payload: &[u8]) {
+    //NOTE: Dont respond to control codes
+    if ControlCodes::try_from(msg.func).is_ok() {
+        return;
+    }
+
+    let result = match FunctionCodes::try_from(msg.func) {
+        Ok(FunctionCodes::SetServo) => handle_set_servo(msg.txn, payload),
+        //TODO: create handler
+        Ok(FunctionCodes::GetServo) => Ok(()),
+        Err(_) => Err(ErrorCodes::InvalidFunc),
+    };
+
+    let reply = match result {
+        Ok(()) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
+        Err(reason) => create_msg(msg.txn, ControlCodes::Nack.into(), Some(&[reason as u8])),
+    };
+
+    if let Ok(frame) = reply {
+        OUTBOUND.send(frame).await;
     }
 }
 

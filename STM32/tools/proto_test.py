@@ -1,122 +1,64 @@
 #!/usr/bin/env python3
-"""das-boot protocol tester: sends frames and verifies ACK/NACK replies.
+"""das-boot protocol tester: sends frames and asserts ACK/NACK replies.
 
-Firmware reply rules:
-  known command (SetServo 0x20) + valid CRC -> ACK   [func=0x06 len=0]
-  unknown func + valid CRC                  -> NACK  [func=0x15 len=1 payload=reason]
-  incoming func Ack(0x06)/Nack(0x15)        -> no reply (host shouldn't send these)
-  bad CRC                                   -> no reply
-
-Frame: [sync=0xAB][txn:u16 LE][func:u8][len:u8][payload:len][crc16:u16 LE]
-CRC:   CRC-16/MODBUS over sync..payload (little-endian on the wire).
+Mechanism tests use GET_SERVO (ACK only, no side effects). SET_SERVO tests
+exercise the command validation (length / servo id / duty range). A valid
+SET_SERVO also emits a deferred "done" reply (func=SET_SERVO) once the slew
+finishes — the ACK assertions filter by (txn, func) so that doesn't interfere.
 
 Usage: python3 proto_test.py [/dev/ttyACM0]
 Exit:  0 = all pass, 1 = one or more failures.
 """
-import os
-import select
 import sys
 import time
-import tty
 
-SYNC = 0xAB
-ACK, NACK, SET_SERVO = 0x06, 0x15, 0x20
-REASON_INVALID_FUNC = 0x05
-
-
-def crc16_modbus(data: bytes) -> int:
-    crc = 0xFFFF
-    for b in data:
-        crc ^= b
-        for _ in range(8):
-            crc = (crc >> 1) ^ 0xA001 if (crc & 1) else (crc >> 1)
-    return crc & 0xFFFF
-
-
-def frame(txn: int, func: int, payload: bytes = b"") -> bytes:
-    body = bytes([SYNC]) + txn.to_bytes(2, "little") + bytes([func, len(payload)]) + payload
-    return body + crc16_modbus(body).to_bytes(2, "little")
-
-
-def parse_frames(data: bytes):
-    """Pull all complete, CRC-valid frames out of a buffer -> [(txn, func, payload)]."""
-    out, i = [], 0
-    while i < len(data):
-        if data[i] != SYNC:
-            i += 1
-            continue
-        if i + 5 > len(data):
-            break
-        total = data[i + 4] + 7
-        if i + total > len(data):
-            break
-        f = data[i:i + total]
-        if crc16_modbus(f[:-2]) == int.from_bytes(f[-2:], "little"):
-            out.append((int.from_bytes(f[1:3], "little"), f[3], bytes(f[5:-2])))
-            i += total
-        else:
-            i += 1
-    return out
-
-
-class Port:
-    def __init__(self, path):
-        self.fd = os.open(path, os.O_RDWR | os.O_NOCTTY)
-        tty.setraw(self.fd)                 # cfmakeraw: no echo / no translation
-        os.set_blocking(self.fd, False)
-
-    def write(self, data: bytes):
-        while data:
-            data = data[os.write(self.fd, data):]
-
-    def drain(self, window=0.3) -> bytes:
-        buf, end = b"", time.monotonic() + window
-        while True:
-            remaining = end - time.monotonic()
-            if remaining <= 0:
-                break
-            if select.select([self.fd], [], [], remaining)[0]:
-                buf += os.read(self.fd, 512)
-        return buf
-
+from proto import (
+    ACK, GET_SERVO, INVALID_FUNC, INVALID_PAYLOAD_LEN, INVALID_SERVO_DUTY,
+    INVALID_SERVO_ID, NACK, SET_SERVO, Port, frame, parse_frames, servo_payload,
+)
 
 fails = 0
 
 
 def check(label, ok, detail=""):
     global fails
-    tag = "PASS" if ok else "FAIL"
-    print(f"  [{tag}] {label}" + (f"  ({detail})" if detail and not ok else ""))
+    print(f"  [{'PASS' if ok else 'FAIL'}] {label}" + (f"  ({detail})" if detail and not ok else ""))
     if not ok:
         fails += 1
 
 
 def main():
     port = Port(sys.argv[1] if len(sys.argv) > 1 else "/dev/ttyACM0")
-    port.drain(0.3)  # flush anything stale
+    port.drain(0.3)  # flush stale
 
-    def expect_reply(label, txn, req, exp_func, exp_payload):
+    def reply(txn, func, req, window=0.3):
+        """Send req, return the (txn, func)-matching reply payload, or None."""
         port.drain(0.05)
         port.write(req)
-        replies = [f for f in parse_frames(port.drain()) if f[0] == txn]
-        if not replies:
-            check(label, False, "no reply")
-            return
-        _, func, payload = replies[0]
-        check(label, func == exp_func and payload == exp_payload,
-              f"got func={func:#04x} payload={payload.hex()}")
+        for t, f, p in parse_frames(port.drain(window)):
+            if t == txn and f == func:
+                return p
+        return None
+
+    def expect_ack(label, txn, req):
+        check(label, reply(txn, ACK, req) is not None, "no ACK")
+
+    def expect_nack(label, txn, req, exp_reason):
+        p = reply(txn, NACK, req)
+        check(label, p == bytes([exp_reason]), f"got {p.hex() if p else 'none'}")
 
     def expect_silence(label, req):
         port.drain(0.05)
         port.write(req)
-        replies = parse_frames(port.drain())
-        check(label, not replies, f"unexpected {[(t, hex(f)) for t, f, _ in replies]}")
+        got = parse_frames(port.drain())
+        check(label, not got, f"unexpected {[(t, hex(f)) for t, f, _ in got]}")
 
+    # --- framing / mechanism (GET_SERVO = clean single ACK) ---
     print("1. known command -> ACK")
-    expect_reply("SetServo -> ACK", 1, frame(1, SET_SERVO, bytes([90])), ACK, b"")
+    expect_ack("GetServo -> ACK", 1, frame(1, GET_SERVO))
 
     print("2. unknown func -> NACK(InvalidFunc)")
-    expect_reply("unknown -> NACK", 2, frame(2, 0x99), NACK, bytes([REASON_INVALID_FUNC]))
+    expect_nack("unknown -> NACK", 2, frame(2, 0x99), INVALID_FUNC)
 
     print("3. incoming ACK -> no reply")
     expect_silence("host ACK ignored", frame(3, ACK))
@@ -125,21 +67,21 @@ def main():
     expect_silence("host NACK ignored", frame(4, NACK))
 
     print("5. bad CRC -> no reply")
-    bad = bytearray(frame(5, SET_SERVO, bytes([1])))
+    bad = bytearray(frame(5, GET_SERVO))
     bad[-1] ^= 0xFF
     expect_silence("bad CRC ignored", bytes(bad))
 
     print("6. leading garbage + valid -> ACK (resync)")
-    expect_reply("resync -> ACK", 6, bytes([0, 1, 2, 3]) + frame(6, SET_SERVO), ACK, b"")
+    expect_ack("resync -> ACK", 6, bytes([0, 1, 2, 3]) + frame(6, GET_SERVO))
 
-    print("7. two frames -> two ACKs (txn 7,8)")
+    print("7. two frames -> two ACKs")
     port.drain(0.05)
-    port.write(frame(7, SET_SERVO) + frame(8, SET_SERVO))
+    port.write(frame(7, GET_SERVO) + frame(8, GET_SERVO))
     txns = sorted(t for t, f, _ in parse_frames(port.drain()) if f == ACK)
     check("two ACKs", txns == [7, 8], f"got {txns}")
 
     print("8. split frame -> ACK")
-    f9 = frame(9, SET_SERVO, bytes([1, 2]))
+    f9 = frame(9, GET_SERVO)
     port.drain(0.05)
     port.write(f9[:4])
     time.sleep(0.2)
@@ -148,14 +90,30 @@ def main():
 
     print("9. flood 20 -> 20 ACKs")
     port.drain(0.05)
-    port.write(b"".join(frame(100 + i, SET_SERVO, bytes([i])) for i in range(20)))
+    port.write(b"".join(frame(100 + i, GET_SERVO) for i in range(20)))
     acks = sorted(t for t, f, _ in parse_frames(port.drain(1.0)) if f == ACK and 100 <= t < 120)
     check("20 ACKs", acks == list(range(100, 120)), f"got {len(acks)}")
 
     print("10. garbage (no sync) then valid -> ACK (recovery)")
     port.write(bytes([0x00, 0x10, 0x20, 0x30]))
     port.drain(0.2)
-    expect_reply("recovery -> ACK", 200, frame(200, SET_SERVO), ACK, b"")
+    expect_ack("recovery -> ACK", 200, frame(200, GET_SERVO))
+
+    # --- SET_SERVO command validation ---
+    print("11. SetServo 3-byte valid -> ACK")
+    expect_ack("setservo(3) -> ACK", 300, frame(300, SET_SERVO, servo_payload(0, 1500)))
+
+    print("12. SetServo 5-byte valid -> ACK")
+    expect_ack("setservo(5) -> ACK", 301, frame(301, SET_SERVO, servo_payload(0, 1500, 50)))
+
+    print("13. SetServo bad length -> NACK(InvalidPayloadLen)")
+    expect_nack("bad len -> NACK", 302, frame(302, SET_SERVO, bytes([0])), INVALID_PAYLOAD_LEN)
+
+    print("14. SetServo bad servo id -> NACK(InvalidServoID)")
+    expect_nack("bad id -> NACK", 303, frame(303, SET_SERVO, servo_payload(9, 1500)), INVALID_SERVO_ID)
+
+    print("15. SetServo out-of-range duty -> NACK(InvalidServoDuty)")
+    expect_nack("bad duty -> NACK", 304, frame(304, SET_SERVO, servo_payload(0, 25000)), INVALID_SERVO_DUTY)
 
     print(f"\n{'ALL PASS' if fails == 0 else f'{fails} FAILED'}")
     sys.exit(1 if fails else 0)

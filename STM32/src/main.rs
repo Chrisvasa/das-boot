@@ -11,10 +11,12 @@ use embassy_stm32::{
 };
 
 use crate::parser::communication_task;
+use crate::pwm::pwm_task;
 
 use {defmt_rtt as _, panic_probe as _};
 
 mod parser;
+mod pwm;
 mod transport;
 
 #[embassy_executor::main]
@@ -48,4 +50,5 @@ async fn main(spawner: Spawner) {
     let (rx, tx) = transport::setup(p.USART1, p.PA10, p.PA9, p.DMA2_CH7, p.DMA2_CH2, spawner).await;
 
     spawner.spawn(defmt::unwrap!(communication_task(rx, tx)));
+    spawner.spawn(defmt::unwrap!(pwm_task(p.TIM3, p.PB0)));
 }
