@@ -123,29 +123,17 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
                 Timer::after_millis(100).await;
             }
         }
-        loop {
+        'parseloop: loop {
             match parser.state {
                 ReadState::Seeking => {
                     if !seek(&mut parser) {
                         parser.buff_len = 0;
-                        break;
+                        break 'parseloop;
                     }
                 }
                 ReadState::Parsing => match parse(&mut parser) {
                     ParseResult::Ok(msg) => {
-                        if ControlCodes::try_from(msg.func).is_err() {
-                            let reply = match FunctionCodes::try_from(msg.func) {
-                                Ok(_) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
-                                Err(_) => create_msg(
-                                    msg.txn,
-                                    ControlCodes::Nack.into(),
-                                    Some(&[ErrorCodes::InvalidFunc as u8]),
-                                ),
-                            };
-                            if let Ok(msg) = reply {
-                                OUTBOUND.send(msg).await
-                            };
-                        }
+                        dispatch(&msg).await;
                         let total_msg_size: usize = msg.len as usize + OVERHEAD;
                         parser.buff.copy_within(total_msg_size..parser.buff_len, 0);
                         parser.state = ReadState::Seeking;
@@ -156,10 +144,27 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
                         parser.buff_len -= 1;
                         parser.state = ReadState::Seeking
                     }
-                    ParseResult::Incomplete => break,
+                    ParseResult::Incomplete => break 'parseloop,
                 },
             }
         }
+    }
+}
+
+async fn dispatch(msg: &MsgInfo) {
+    if ControlCodes::try_from(msg.func).is_err() {
+        let reply = match FunctionCodes::try_from(msg.func) {
+            Ok(_) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
+            Err(_) => create_msg(
+                msg.txn,
+                ControlCodes::Nack.into(),
+                Some(&[ErrorCodes::InvalidFunc as u8]),
+            ),
+        };
+        //TODO: Dispatch here
+        if let Ok(msg) = reply {
+            OUTBOUND.send(msg).await
+        };
     }
 }
 
