@@ -1,0 +1,25 @@
+[Unit]
+Description=Das Boot lightweight STM32 bridge API
+After=network.target
+
+[Service]
+Type=simple
+User=dasboot
+Group=dasboot
+SupplementaryGroups=dialout
+WorkingDirectory=/opt/das-boot-api
+ExecStart=/opt/das-boot-api/DasBoot.Api
+Restart=on-failure
+RestartSec=2
+Environment=DOTNET_EnableDiagnostics=0
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

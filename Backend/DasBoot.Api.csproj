@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <StripSymbols>true</StripSymbols>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
+
+    <WarningsAsErrors>$(WarningsAsErrors);IL2026;IL3050</WarningsAsErrors>
+
+    <Platforms>AnyCPU;ARM64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+  </ItemGroup>
+</Project>

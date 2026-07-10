@@ -1,0 +1,45 @@
+@host = http://localhost:5080
+@pilotToken = replace-after-claim
+
+GET {{host}}/health/live
+
+###
+GET {{host}}/api/status
+
+###
+GET {{host}}/api/telemetry/latest
+
+### Claim pilot
+POST {{host}}/api/pilot/claim
+Content-Type: application/json
+
+{
+  "clientId": "dev-client",
+  "displayName": "Developer"
+}
+
+### Pilot heartbeat
+POST {{host}}/api/pilot/heartbeat
+Content-Type: application/json
+
+{
+  "token": "{{pilotToken}}"
+}
+
+### Set servo (requires pilot token)
+POST {{host}}/api/control/servo
+Content-Type: application/json
+X-Pilot-Token: {{pilotToken}}
+
+{
+  "channel": 0,
+  "pulseWidthMicroseconds": 1500
+}
+
+### Release pilot
+POST {{host}}/api/pilot/release
+Content-Type: application/json
+
+{
+  "token": "{{pilotToken}}"
+}

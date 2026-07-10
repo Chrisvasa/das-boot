@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071016">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Kontrollpanel för das-boot">
+  <title>das-boot control</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="das-boot startsida">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img">
+            <path d="M5 18.5h18.8l3.2 3H9.8L5 18.5Z" />
+            <path d="M10 18.5v-5.8h10.5v5.8M14 12.7V9.5h4v3.2" />
+          </svg>
+        </span>
+        <span>
+          <strong>das-boot</strong>
+          <small>surface control</small>
+        </span>
+      </a>
+
+      <div class="topbar-actions">
+        <div class="connection-pill" id="connectionPill" data-state="offline" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="connectionLabel">Frånkopplad</span>
+        </div>
+        <button class="pilot-button" id="pilotButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" />
+          </svg>
+          <span id="pilotButtonLabel">Ta kontroll</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="video-card" aria-labelledby="streamHeading">
+        <h1 class="sr-only" id="streamHeading">Videoström från ubåten</h1>
+
+        <div class="stream-stage" id="streamStage">
+          <img class="stream-media" id="mjpegStream" alt="Livevideo från ubåten" hidden>
+          <video class="stream-media" id="videoStream" playsinline autoplay muted hidden></video>
+
+          <div class="stream-placeholder" id="streamPlaceholder">
+            <div class="sonar" aria-hidden="true">
+              <span></span>
+            </div>
+            <strong>Ingen videoström konfigurerad</strong>
+            <span>Ange adressen i <code>wwwroot/config.js</code></span>
+          </div>
+
+          <div class="stream-top-overlay">
+            <div class="live-badge" id="liveBadge" data-live="false">
+              <span></span>
+              <span id="liveBadgeText">STREAM OFFLINE</span>
+            </div>
+            <button class="icon-button" id="fullscreenButton" type="button" aria-label="Visa video i helskärm">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="telemetry-overlay" aria-label="Snabbtelemetri">
+            <div class="telemetry-chip">
+              <span class="telemetry-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 7h11v10H7zM18 10h2v4h-2M9 10v4M12 10v4M15 10v4" /></svg>
+              </span>
+              <span><small>Batteri</small><strong id="batteryValue">--</strong></span>
+            </div>
+            <div class="telemetry-chip">
+              <span class="telemetry-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v14M8 13l4 4 4-4M5 21h14" /></svg>
+              </span>
+              <span><small>Djup</small><strong id="depthValue">--</strong></span>
+            </div>
+            <div class="telemetry-chip">
+              <span class="telemetry-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z" /></svg>
+              </span>
+              <span><small>Temperatur</small><strong id="temperatureValue">--</strong></span>
+            </div>
+          </div>
+
+          <div class="pilot-banner" id="pilotBanner" data-mode="observer">
+            <span class="pilot-banner-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" /></svg>
+            </span>
+            <span id="pilotBannerText">Observatörsläge · inga styrkommandon skickas</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="panel-section controls-section" aria-labelledby="controlsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">MANUELL STYRNING</p>
+              <h2 id="controlsHeading">Servon</h2>
+            </div>
+            <span class="control-lock" id="controlLock">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5z" /></svg>
+              Låst
+            </span>
+          </div>
+
+          <div class="servo-list" id="servoControls"></div>
+
+          <p class="control-note">
+            Värden skickas endast när du har pilotlåset. Kanalnumren ändras i <code>config.js</code>.
+          </p>
+        </section>
+
+        <section class="panel-section system-section" aria-labelledby="systemHeading">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">SYSTEM</p>
+              <h2 id="systemHeading">Status</h2>
+            </div>
+            <button class="text-button" id="refreshButton" type="button">Uppdatera</button>
+          </div>
+
+          <dl class="status-grid">
+            <div>
+              <dt>UART</dt>
+              <dd id="uartStatus">Frånkopplad</dd>
+            </div>
+            <div>
+              <dt>STM32</dt>
+              <dd id="stm32Status">Inget svar</dd>
+            </div>
+            <div>
+              <dt>Senast mottaget</dt>
+              <dd id="lastReceive">--</dd>
+            </div>
+            <div>
+              <dt>CRC-fel</dt>
+              <dd id="crcErrors">0</dd>
+            </div>
+          </dl>
+
+          <details class="raw-telemetry">
+            <summary>Rå telemetri</summary>
+            <div class="raw-grid">
+              <span>Function</span><code id="rawFunction">--</code>
+              <span>Payload</span><code id="rawPayload">--</code>
+              <span>Mottagen</span><code id="rawReceived">--</code>
+            </div>
+          </details>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog class="pilot-dialog" id="pilotDialog">
+    <form method="dialog" class="dialog-card" id="pilotForm">
+      <button class="dialog-close" value="cancel" aria-label="Stäng dialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      </button>
+      <div class="dialog-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" /></svg>
+      </div>
+      <p class="eyebrow">PILOTLÅS</p>
+      <h2>Ta över styrningen</h2>
+      <p class="dialog-copy">Endast en klient kan skicka styrkommandon åt gången. Låset släpps automatiskt om din enhet tappar kontakten.</p>
+
+      <label class="field-label" for="pilotName">Visningsnamn</label>
+      <input id="pilotName" name="pilotName" maxlength="32" autocomplete="nickname" placeholder="Till exempel Christopher">
+
+      <p class="dialog-error" id="pilotDialogError" role="alert" hidden></p>
+
+      <div class="dialog-actions">
+        <button class="secondary-button" value="cancel" type="button" id="cancelPilotButton">Avbryt</button>
+        <button class="primary-button" value="default" type="submit" id="claimPilotButton">Ta kontroll</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+
+  <template id="servoTemplate">
+    <div class="servo-control">
+      <div class="servo-header">
+        <label></label>
+        <output></output>
+      </div>
+      <div class="range-row">
+        <span>−</span>
+        <input type="range" step="1" disabled>
+        <span>+</span>
+      </div>
+      <div class="servo-footer">
+        <span class="channel-label"></span>
+        <button class="center-button" type="button" disabled>Centrera</button>
+      </div>
+    </div>
+  </template>
+</body>
+</html>

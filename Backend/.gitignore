@@ -1,0 +1,121 @@
+# .NET build output
+
+bin/
+obj/
+out/
+publish/
+artifacts/
+
+# Visual Studio
+
+.vs/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test and coverage output
+
+TestResults/
+*.coverage
+*.coveragexml
+
+# JetBrains Rider / ReSharper
+
+.idea/
+*.sln.iml
+_ReSharper*/
+*.DotSettings.user
+
+# VS Code
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# NuGet packages
+
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Logs and temporary files
+
+*.log
+logs/
+temp/
+tmp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Windows
+
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+
+.directory
+.Trash-*
+
+# Local settings and secrets
+
+appsettings.Local.json
+appsettings.Development.local.json
+appsettings.*.local.json
+
+.env
+.env.*
+!.env.example
+
+secrets.json
+*.secrets.json
+
+# Certificates and private keys
+
+*.pfx
+*.p12
+*.pem
+*.key
+
+# Local deployment output
+
+deploy/
+deployment/
+*.pid
+
+# Hardware-specific local overrides
+
+serial.local.json
+hardware.local.json
+
+# Frontend tooling, in case it is added later
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+.cache/
+.parcel-cache/
