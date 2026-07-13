@@ -11,12 +11,12 @@ use embassy_stm32::{
 };
 
 use crate::parser::communication_task;
-use crate::pwm::pwm_task;
+use crate::servo_handler::pwm_task;
 
 use {defmt_rtt as _, panic_probe as _};
 
 mod parser;
-mod pwm;
+mod servo_handler;
 mod transport;
 
 #[embassy_executor::main]

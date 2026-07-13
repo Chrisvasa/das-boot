@@ -1,4 +1,4 @@
-use crate::{pwm::handle_set_servo, transport};
+use crate::{servo_handler::handle_set_servo, transport};
 use crc16::*;
 use defmt::warn;
 use embassy_futures::join::join;

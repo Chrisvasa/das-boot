@@ -1,4 +1,6 @@
 use core::sync::atomic::{self, AtomicU16};
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use embassy_sync::signal::Signal;
 
 use embassy_stm32::{
     gpio::OutputType,
@@ -49,6 +51,8 @@ static SERVOS: [Servo; NUM_SERVOS] = [
 ];
 const DUTY_DENOM: u32 = 20000;
 
+static SERVO_SIG: Signal<CriticalSectionRawMutex, ()> = Signal::new();
+
 #[embassy_executor::task]
 pub async fn pwm_task(
     timer: Peri<'static, peripherals::TIM3>,
@@ -69,6 +73,7 @@ pub async fn pwm_task(
     pwm.channel(Channel::Ch3).enable();
 
     loop {
+        let mut num_stepping: u8 = 0;
         for servo in &SERVOS {
             match step(&servo) {
                 ServoState::Idle => {}
@@ -77,6 +82,7 @@ pub async fn pwm_task(
                         servo.current.load(atomic::Ordering::Relaxed) as u32,
                         DUTY_DENOM,
                     );
+                    num_stepping += 1;
                 }
                 ServoState::Done => {
                     pwm.channel(servo.channel).set_duty_cycle_fraction(
@@ -94,7 +100,11 @@ pub async fn pwm_task(
                 }
             }
         }
-        Timer::after_millis(20).await;
+        if num_stepping > 0 {
+            Timer::after_millis(20).await;
+        } else {
+            SERVO_SIG.wait().await;
+        }
     }
 }
 
@@ -128,6 +138,7 @@ fn set_servo(servo: &Servo, txn: u16, target: u16, step: Option<u16>) {
     servo
         .step
         .store(step.unwrap_or(0), atomic::Ordering::Relaxed);
+    SERVO_SIG.signal(());
 }
 
 const SET_SERVO_LEN: [u8; 2] = [3, 5];
@@ -171,6 +182,5 @@ pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<(), ErrorCodes> {
         servo_payload.target,
         Some(servo_payload.step_size),
     );
-
     Ok(())
 }
