@@ -12,11 +12,13 @@ SYNC = 0xAB
 
 # control codes (device -> host replies)
 ACK = 0x06
-NACK = 0x15
+NACK = 0x10
 
 # command codes (host -> device)
+PING = 0x15
 SET_SERVO = 0x20
 GET_SERVO = 0x21
+GET_SERVO_ALL = 0x22
 
 # NACK reason codes
 INVALID_FUNC = 0x05
@@ -24,6 +26,7 @@ INVALID_PAYLOAD = 0x06
 INVALID_PAYLOAD_LEN = 0x07
 INVALID_SERVO_ID = 0x08
 INVALID_SERVO_DUTY = 0x09
+VECTOR_ERROR = 0x10
 
 
 def crc16_modbus(data: bytes) -> int:
@@ -46,6 +49,25 @@ def servo_payload(num: int, target: int, step: int | None = None) -> bytes:
     if step is not None:
         p += step.to_bytes(2, "little")
     return p
+
+
+def parse_servo_status(payload: bytes) -> dict[int, tuple[int, int, int]]:
+    """Decode a GET_SERVO reply -> {servo_index: (current, target, step)}.
+
+    Payload: [mask:u8][ per set bit, ascending: current:u16, target:u16, step:u16 ].
+    The leading mask says which servos are present; walk its set bits in order.
+    """
+    if not payload:
+        return {}
+    mask, off, out = payload[0], 1, {}
+    for i in range(8):
+        if mask & (1 << i):
+            cur = int.from_bytes(payload[off:off + 2], "little")
+            tgt = int.from_bytes(payload[off + 2:off + 4], "little")
+            stp = int.from_bytes(payload[off + 4:off + 6], "little")
+            out[i] = (cur, tgt, stp)
+            off += 6
+    return out
 
 
 def parse_frames(data: bytes):

@@ -13,8 +13,9 @@ use embassy_stm32::{
     Peri,
 };
 use embassy_time::Timer;
+use heapless::Vec;
 
-use crate::parser::{create_msg, ErrorCodes, FunctionCodes, OUTBOUND};
+use crate::parser::{create_msg, ErrorCodes, FunctionCodes, Response, OUTBOUND};
 
 enum ServoState {
     Idle,
@@ -152,7 +153,7 @@ struct ServoPayload {
     step_size: u16,
 }
 
-pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<(), ErrorCodes> {
+pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes> {
     let len = payload.len() as u8;
     if !SET_SERVO_LEN.contains(&len) {
         return Err(ErrorCodes::InvalidPayloadLen);
@@ -182,5 +183,64 @@ pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<(), ErrorCodes> {
         servo_payload.target,
         Some(servo_payload.step_size),
     );
-    Ok(())
+    Ok(Response::SendAck)
+}
+
+pub async fn get_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes> {
+    let len = payload.len() as u8;
+    if len != 1 {
+        return Err(ErrorCodes::InvalidPayloadLen);
+    }
+
+    let mut mask = payload[0];
+    const VALID_MASK: u8 = (1 << NUM_SERVOS) - 1;
+    if mask & !VALID_MASK != 0 {
+        return Err(ErrorCodes::InvalidServoID);
+    }
+
+    if mask == 0 {
+        return Err(ErrorCodes::InvalidServoID);
+    }
+
+    //NOTE: 3 u16 for current, target, step
+    const SERVO_INFO_LEN: usize = 6;
+    //NOTE: 1 Extra byte for the mask
+    const BUFF_LEN: usize = SERVO_INFO_LEN * NUM_SERVOS + 1;
+
+    let mut buff: Vec<u8, BUFF_LEN> = Vec::new();
+    buff.push(mask).ok();
+    while mask != 0 {
+        let index = mask.trailing_zeros() as usize;
+
+        defmt::unwrap!(buff.extend_from_slice(
+            &SERVOS[index]
+                .current
+                .load(atomic::Ordering::Relaxed)
+                .to_le_bytes()
+        ));
+        defmt::unwrap!(buff.extend_from_slice(
+            &SERVOS[index]
+                .target
+                .load(atomic::Ordering::Relaxed)
+                .to_le_bytes()
+        ));
+        defmt::unwrap!(buff.extend_from_slice(
+            &SERVOS[index]
+                .step
+                .load(atomic::Ordering::Relaxed)
+                .to_le_bytes()
+        ));
+
+        mask &= !(1 << index);
+    }
+
+    let msg = create_msg(txn, FunctionCodes::GetServo.into(), Some(&buff));
+
+    if let Ok(frame) = msg {
+        OUTBOUND.send(frame).await;
+    } else {
+        return Err(ErrorCodes::VectorError);
+    }
+
+    Ok(Response::NoAck)
 }

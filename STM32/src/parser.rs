@@ -1,4 +1,7 @@
-use crate::{servo_handler::handle_set_servo, transport};
+use crate::{
+    servo_handler::{get_servo, handle_set_servo},
+    transport,
+};
 use crc16::*;
 use defmt::warn;
 use embassy_futures::join::join;
@@ -26,14 +29,16 @@ pub enum FrameError {
 #[repr(u8)]
 pub enum ControlCodes {
     Ack = 0x06,
-    Nack = 0x15,
+    Nack = 0x10,
 }
 
 #[derive(num_enum::TryFromPrimitive, num_enum::IntoPrimitive)]
 #[repr(u8)]
 pub enum FunctionCodes {
+    Ping = 0x15,
     SetServo = 0x20,
-    GetServo = 0x21,
+    GetServo = 0x21, // payload: mask for which servos to get info from
+    GetServoAll = 0x22,
 }
 
 #[allow(dead_code)]
@@ -44,6 +49,13 @@ pub enum ErrorCodes {
     InvalidPayloadLen = 0x07,
     InvalidServoID = 0x08,
     InvalidServoDuty = 0x09,
+    VectorError = 0x10,
+}
+
+#[repr(u8)]
+pub enum Response {
+    SendAck,
+    NoAck,
 }
 
 const SYNC: u8 = 0xAB;
@@ -165,14 +177,19 @@ async fn validate_dispatch(msg: &MsgInfo, payload: &[u8]) {
     }
 
     let result = match FunctionCodes::try_from(msg.func) {
+        Ok(FunctionCodes::Ping) => Ok(Response::SendAck),
         Ok(FunctionCodes::SetServo) => handle_set_servo(msg.txn, payload),
-        //TODO: create handler
-        Ok(FunctionCodes::GetServo) => Ok(()),
+        Ok(FunctionCodes::GetServo) => get_servo(msg.txn, payload).await,
+        Ok(FunctionCodes::GetServoAll) => Ok(Response::NoAck),
         Err(_) => Err(ErrorCodes::InvalidFunc),
     };
 
+    if let Ok(Response::NoAck) = result {
+        return;
+    }
+
     let reply = match result {
-        Ok(()) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
+        Ok(_) => create_msg(msg.txn, ControlCodes::Ack.into(), None),
         Err(reason) => create_msg(msg.txn, ControlCodes::Nack.into(), Some(&[reason as u8])),
     };
 
