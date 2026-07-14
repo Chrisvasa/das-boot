@@ -12,8 +12,6 @@
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
 
     <WarningsAsErrors>$(WarningsAsErrors);IL2026;IL3050</WarningsAsErrors>
-
-    <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

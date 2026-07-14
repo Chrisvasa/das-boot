@@ -25,6 +25,12 @@ public readonly record struct ServoCommandResponse(
     bool Accepted,
     byte? NackReason);
 
+public readonly record struct Stm32PingResponse(
+    ushort TransactionId,
+    bool Acknowledged,
+    double RoundTripMilliseconds,
+    byte? NackReason);
+
 public readonly record struct RawTelemetryResponse(
     DateTimeOffset ReceivedAtUtc,
     ushort TransactionId,

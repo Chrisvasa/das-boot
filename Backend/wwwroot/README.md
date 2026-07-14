@@ -18,6 +18,14 @@ streamUrl: "/camera/stream"
 Det är bäst att reverse-proxya kameraprocessen under samma host, exempelvis
 `/camera/stream`. Då undviks CORS, mixed-content och separata certifikat.
 
+
+## Pingtest
+
+Statuspanelen har knappen **Pinga STM32**. Den anropar `POST /api/stm32/ping` och
+visar transaction id samt round-trip-tid när STM32 svarar med ACK. Ping kräver
+inte pilotlåset och är avsett för USB CDC-demon på utvecklingslaptopen såväl som
+för länkdiagnostik på Raspberry Pi.
+
 ## Servokanaler
 
 Kanaler, namn och pulse width-gränser ändras i `config.js`. Standard är:

@@ -752,6 +752,73 @@ svg {
   white-space: nowrap;
 }
 
+.link-test {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.link-test div {
+  min-width: 0;
+}
+
+.link-test span,
+.link-test strong {
+  display: block;
+}
+
+.link-test span {
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.link-test strong {
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-test[data-state="pending"] strong {
+  color: var(--warning);
+}
+
+.link-test[data-state="success"] strong {
+  color: var(--accent-bright);
+}
+
+.link-test[data-state="error"] strong {
+  color: var(--danger);
+}
+
+.ping-button {
+  min-height: 38px;
+  flex: 0 0 auto;
+  padding: 0 12px;
+  border: 1px solid rgba(76, 201, 176, 0.28);
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ping-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .raw-telemetry {
   margin-top: 12px;
   border: 1px solid var(--line);

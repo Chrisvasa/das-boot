@@ -10,7 +10,7 @@ public sealed class Stm32LinkOptions
     public int ReconnectDelayMilliseconds { get; init; } = 1000;
     public int ResponsiveWindowMilliseconds { get; init; } = 3000;
     public int CommandQueueCapacity { get; init; } = 32;
-    public int MaxServoChannel { get; init; } = 15;
+    public int MaxServoChannel { get; init; } = 3;
     public int ServoMinPulseMicroseconds { get; init; } = 500;
     public int ServoMaxPulseMicroseconds { get; init; } = 2500;
 
@@ -29,7 +29,7 @@ public sealed class Stm32LinkOptions
             CommandQueueCapacity = ReadInt(
                 configuration, "Stm32:CommandQueueCapacity", 32, 1, 1024),
             MaxServoChannel = ReadInt(
-                configuration, "Stm32:MaxServoChannel", 15, 0, byte.MaxValue),
+                configuration, "Stm32:MaxServoChannel", 3, 0, byte.MaxValue),
             ServoMinPulseMicroseconds = ReadInt(
                 configuration, "Stm32:ServoMinPulseMicroseconds", 500, 1, ushort.MaxValue),
             ServoMaxPulseMicroseconds = ReadInt(

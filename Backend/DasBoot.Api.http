@@ -9,6 +9,9 @@ GET {{host}}/api/status
 ###
 GET {{host}}/api/telemetry/latest
 
+### Ping STM32 over the configured serial transport
+POST {{host}}/api/stm32/ping
+
 ### Claim pilot
 POST {{host}}/api/pilot/claim
 Content-Type: application/json

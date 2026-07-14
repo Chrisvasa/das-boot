@@ -8,7 +8,8 @@ const state = {
     portOpen: false,
     deviceResponsive: false,
     lastReceiveUtc: null,
-    crcErrors: 0
+    crcErrors: 0,
+    portName: ""
   },
   pilot: {
     token: sessionStorage.getItem("dasBoot.pilotToken"),
@@ -48,6 +49,10 @@ const elements = {
   refreshButton: document.querySelector("#refreshButton"),
   uartStatus: document.querySelector("#uartStatus"),
   stm32Status: document.querySelector("#stm32Status"),
+  serialPortName: document.querySelector("#serialPortName"),
+  pingPanel: document.querySelector("#pingPanel"),
+  pingButton: document.querySelector("#pingButton"),
+  pingResult: document.querySelector("#pingResult"),
   lastReceive: document.querySelector("#lastReceive"),
   crcErrors: document.querySelector("#crcErrors"),
   rawFunction: document.querySelector("#rawFunction"),
@@ -299,7 +304,7 @@ function renderLinkStatus() {
     elements.connectionLabel.textContent = "Ansluten";
   } else if (portOpen) {
     elements.connectionPill.dataset.state = "degraded";
-    elements.connectionLabel.textContent = "UART öppen";
+    elements.connectionLabel.textContent = "Port öppen";
   } else {
     elements.connectionPill.dataset.state = "offline";
     elements.connectionLabel.textContent = "Frånkopplad";
@@ -307,9 +312,46 @@ function renderLinkStatus() {
 
   elements.uartStatus.textContent = portOpen ? "Öppen" : "Frånkopplad";
   elements.stm32Status.textContent = deviceResponsive ? "Svarar" : "Inget aktuellt svar";
+  elements.serialPortName.textContent = state.link.portName || "--";
+  elements.serialPortName.title = state.link.portName || "";
+  elements.pingButton.disabled = !portOpen;
   elements.lastReceive.textContent = lastReceiveUtc ? formatRelativeTime(lastReceiveUtc) : "--";
   elements.crcErrors.textContent = String(crcErrors ?? 0);
   updateControlsState();
+}
+
+async function pingStm32() {
+  elements.pingButton.disabled = true;
+  elements.pingButton.textContent = "Pingar…";
+  elements.pingPanel.dataset.state = "pending";
+  elements.pingResult.textContent = "Väntar på ACK";
+
+  try {
+    const result = await apiRequest("/api/stm32/ping", {
+      method: "POST",
+      timeout: 3000
+    });
+
+    elements.pingPanel.dataset.state = "success";
+    elements.pingResult.textContent = `${Number(result.roundTripMilliseconds).toFixed(2)} ms · txn ${result.transactionId}`;
+    showToast("STM32 svarade på ping.");
+    await refreshLinkStatus();
+  } catch (error) {
+    elements.pingPanel.dataset.state = "error";
+
+    if (error instanceof ApiError && error.code === "stm32_timeout") {
+      elements.pingResult.textContent = "Timeout – inget ACK";
+    } else if (error instanceof ApiError && error.code === "stm32_unavailable") {
+      elements.pingResult.textContent = "Serieporten är inte öppen";
+    } else {
+      elements.pingResult.textContent = error?.message ?? "Ping misslyckades";
+    }
+
+    showToast(elements.pingResult.textContent, "error");
+  } finally {
+    elements.pingButton.textContent = "Pinga STM32";
+    elements.pingButton.disabled = !state.link.portOpen;
+  }
 }
 
 async function refreshTelemetry() {
@@ -631,6 +673,7 @@ function bindEvents() {
 
   elements.cancelPilotButton.addEventListener("click", () => elements.pilotDialog.close());
   elements.fullscreenButton.addEventListener("click", toggleFullscreen);
+  elements.pingButton.addEventListener("click", () => void pingStm32());
   elements.refreshButton.addEventListener("click", async () => {
     await Promise.all([
       refreshLinkStatus({ quiet: false }),

@@ -130,12 +130,16 @@
 
           <dl class="status-grid">
             <div>
-              <dt>UART</dt>
+              <dt>Seriell länk</dt>
               <dd id="uartStatus">Frånkopplad</dd>
             </div>
             <div>
               <dt>STM32</dt>
               <dd id="stm32Status">Inget svar</dd>
+            </div>
+            <div>
+              <dt>Enhet</dt>
+              <dd id="serialPortName">--</dd>
             </div>
             <div>
               <dt>Senast mottaget</dt>
@@ -146,6 +150,14 @@
               <dd id="crcErrors">0</dd>
             </div>
           </dl>
+
+          <div class="link-test" id="pingPanel" data-state="idle">
+            <div>
+              <span>Kommunikationstest</span>
+              <strong id="pingResult" aria-live="polite">Inte testad</strong>
+            </div>
+            <button class="ping-button" id="pingButton" type="button" disabled>Pinga STM32</button>
+          </div>
 
           <details class="raw-telemetry">
             <summary>Rå telemetri</summary>

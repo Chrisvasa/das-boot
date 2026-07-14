@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DasBoot.Api.Contracts;
 using DasBoot.Api.Pilot;
 using DasBoot.Api.Serialization;
@@ -17,6 +18,7 @@ internal static class EndpointMappings
         app.MapGet("/health/stm32", GetStm32Health);
         app.MapGet("/api/status", GetStatus);
         app.MapGet("/api/telemetry/latest", GetLatestTelemetry);
+        app.MapPost("/api/stm32/ping", PingStm32Async);
 
         app.MapGet("/api/pilot/status", GetPilotStatus);
         app.MapPost("/api/pilot/claim", ClaimPilot);
@@ -71,6 +73,61 @@ internal static class EndpointMappings
             latest.TransactionId,
             latest.Function,
             latest.Payload));
+    }
+
+    private static async Task<IResult> PingStm32Async(
+        IStm32Link link,
+        CancellationToken cancellationToken)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        var reply = await link.SendCommandAsync(
+            ProtocolConstants.Ping,
+            ReadOnlyMemory<byte>.Empty,
+            cancellationToken);
+        stopwatch.Stop();
+
+        var elapsedMilliseconds = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2);
+
+        return reply.Kind switch
+        {
+            CommandReplyKind.Accepted => Results.Json(
+                new Stm32PingResponse(
+                    reply.TransactionId,
+                    true,
+                    elapsedMilliseconds,
+                    null),
+                ApiJsonContext.Default.Stm32PingResponse),
+
+            CommandReplyKind.Rejected => Results.Json(
+                new Stm32PingResponse(
+                    reply.TransactionId,
+                    false,
+                    elapsedMilliseconds,
+                    reply.NackReason),
+                ApiJsonContext.Default.Stm32PingResponse,
+                statusCode: StatusCodes.Status422UnprocessableEntity),
+
+            CommandReplyKind.Timeout => Results.Json(
+                new ApiErrorResponse(
+                    "stm32_timeout",
+                    "STM32 did not acknowledge the ping before the timeout."),
+                ApiJsonContext.Default.ApiErrorResponse,
+                statusCode: StatusCodes.Status504GatewayTimeout),
+
+            CommandReplyKind.QueueFull => Results.Json(
+                new ApiErrorResponse(
+                    "command_queue_full",
+                    "The bounded STM32 command queue is full."),
+                ApiJsonContext.Default.ApiErrorResponse,
+                statusCode: StatusCodes.Status429TooManyRequests),
+
+            _ => Results.Json(
+                new ApiErrorResponse(
+                    "stm32_unavailable",
+                    "The STM32 serial link is unavailable."),
+                ApiJsonContext.Default.ApiErrorResponse,
+                statusCode: StatusCodes.Status503ServiceUnavailable)
+        };
     }
 
     private static IResult GetPilotStatus(PilotSessionService pilots)
