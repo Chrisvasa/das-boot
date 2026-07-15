@@ -156,13 +156,13 @@ The helper script prefers a stable `/dev/serial/by-id/...` link that resolves to
 a `ttyACM` device, then falls back to `/dev/ttyACM0`:
 
 ```bash
-./run-fedora-demo.sh
+./start-net.sh
 ```
 
 A device can also be supplied explicitly:
 
 ```bash
-./run-fedora-demo.sh /dev/ttyACM1
+./start-net.sh /dev/ttyACM1
 ```
 
 If access is denied, inspect the device group and add your user to that group,
