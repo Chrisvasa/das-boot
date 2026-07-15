@@ -56,22 +56,25 @@ static SERVO_SIG: Signal<CriticalSectionRawMutex, ()> = Signal::new();
 
 #[embassy_executor::task]
 pub async fn pwm_task(
-    timer: Peri<'static, peripherals::TIM3>,
-    pin: Peri<'static, peripherals::PB0>,
+    timer: Peri<'static, peripherals::TIM4>,
+    ch1pin: Peri<'static, peripherals::PB6>,
+    ch2pin: Peri<'static, peripherals::PB7>,
+    ch3pin: Peri<'static, peripherals::PB8>,
+    ch4pin: Peri<'static, peripherals::PB9>,
 ) -> ! {
-    let pwm_pin = PwmPin::new(pin, OutputType::PushPull);
     let mut pwm = SimplePwm::new(
         timer,
-        None,
-        None,
-        Some(pwm_pin),
-        None,
+        Some(PwmPin::new(ch1pin, OutputType::PushPull)),
+        Some(PwmPin::new(ch2pin, OutputType::PushPull)),
+        Some(PwmPin::new(ch3pin, OutputType::PushPull)),
+        Some(PwmPin::new(ch4pin, OutputType::PushPull)),
         hz(50),
         Default::default(),
     );
 
-    //NOTE: Only enabled CH3 for now since thats the only thing having something connected
-    pwm.channel(Channel::Ch3).enable();
+    for servo in &SERVOS {
+        pwm.channel(servo.channel).enable();
+    }
 
     loop {
         let mut num_stepping: u8 = 0;

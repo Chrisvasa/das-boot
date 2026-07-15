@@ -70,25 +70,49 @@ def parse_servo_status(payload: bytes) -> dict[int, tuple[int, int, int]]:
     return out
 
 
-def parse_frames(data: bytes):
-    """All complete, CRC-valid frames in a buffer -> [(txn, func, payload)]."""
+def _scan(buf: bytes):
+    """Walk a buffer -> (frames, bytes_consumed). Stops at the first incomplete
+    frame, leaving it (and its leading sync) unconsumed for the next call."""
     out, i = [], 0
-    while i < len(data):
-        if data[i] != SYNC:
+    while i < len(buf):
+        if buf[i] != SYNC:
             i += 1
             continue
-        if i + 5 > len(data):
+        if i + 5 > len(buf):
             break
-        total = data[i + 4] + 7
-        if i + total > len(data):
+        total = buf[i + 4] + 7
+        if i + total > len(buf):
             break
-        f = data[i:i + total]
+        f = buf[i:i + total]
         if crc16_modbus(f[:-2]) == int.from_bytes(f[-2:], "little"):
             out.append((int.from_bytes(f[1:3], "little"), f[3], bytes(f[5:-2])))
             i += total
         else:
             i += 1
-    return out
+    return out, i
+
+
+def parse_frames(data: bytes):
+    """All complete, CRC-valid frames in a buffer -> [(txn, func, payload)]."""
+    return _scan(data)[0]
+
+
+class FrameReader:
+    """Stateful accumulator: feed it byte chunks, get back complete frames.
+
+    Unlike parse_frames() (one-shot over a full buffer), this keeps a partial
+    tail between calls, so a frame split across reads reassembles. Use it when
+    replies arrive continuously (e.g. several servos reporting independently).
+    """
+
+    def __init__(self):
+        self.buf = bytearray()
+
+    def push(self, data: bytes):
+        self.buf += data
+        frames, consumed = _scan(self.buf)
+        del self.buf[:consumed]
+        return frames
 
 
 class Port:

@@ -50,5 +50,5 @@ async fn main(spawner: Spawner) {
     let (rx, tx) = transport::setup(p.USART1, p.PA10, p.PA9, p.DMA2_CH7, p.DMA2_CH2, spawner).await;
 
     spawner.spawn(defmt::unwrap!(communication_task(rx, tx)));
-    spawner.spawn(defmt::unwrap!(pwm_task(p.TIM3, p.PB0)));
+    spawner.spawn(defmt::unwrap!(pwm_task(p.TIM4, p.PB6, p.PB7, p.PB8, p.PB9)));
 }
