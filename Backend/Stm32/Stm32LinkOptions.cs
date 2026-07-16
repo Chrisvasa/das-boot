@@ -11,8 +11,8 @@ public sealed class Stm32LinkOptions
     public int ResponsiveWindowMilliseconds { get; init; } = 3000;
     public int CommandQueueCapacity { get; init; } = 32;
     public int MaxServoChannel { get; init; } = 3;
-    public int ServoMinPulseMicroseconds { get; init; } = 500;
-    public int ServoMaxPulseMicroseconds { get; init; } = 2500;
+    public int ServoMinPulseMicroseconds { get; init; } = 0;
+    public int ServoMaxPulseMicroseconds { get; init; } = 19000;
 
     public static Stm32LinkOptions FromConfiguration(IConfiguration configuration)
     {
@@ -31,9 +31,9 @@ public sealed class Stm32LinkOptions
             MaxServoChannel = ReadInt(
                 configuration, "Stm32:MaxServoChannel", 3, 0, byte.MaxValue),
             ServoMinPulseMicroseconds = ReadInt(
-                configuration, "Stm32:ServoMinPulseMicroseconds", 500, 1, ushort.MaxValue),
+                configuration, "Stm32:ServoMinPulseMicroseconds", 0, 0, 19000),
             ServoMaxPulseMicroseconds = ReadInt(
-                configuration, "Stm32:ServoMaxPulseMicroseconds", 2500, 1, ushort.MaxValue)
+                configuration, "Stm32:ServoMaxPulseMicroseconds", 19000, 1, 19000)
         };
     }
 
