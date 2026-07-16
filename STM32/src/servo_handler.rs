@@ -1,4 +1,5 @@
 use core::sync::atomic::{self, AtomicU16};
+use defmt::debug;
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::signal::Signal;
 
@@ -51,6 +52,12 @@ static SERVOS: [Servo; NUM_SERVOS] = [
     const { Servo::new(Channel::Ch4) },
 ];
 const DUTY_DENOM: u32 = 20000;
+
+//NOTE: 3 u16 for current, target, step
+const SERVO_INFO_LEN: usize = 6;
+//NOTE: 1 Extra byte for the mask
+const SERVO_VEC_LEN: usize = (SERVO_INFO_LEN * NUM_SERVOS) + 1;
+const VALID_MASK: u8 = (1 << NUM_SERVOS) - 1;
 
 static SERVO_SIG: Signal<CriticalSectionRawMutex, ()> = Signal::new();
 
@@ -180,6 +187,8 @@ pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes
         return Err(ErrorCodes::InvalidServoDuty);
     }
 
+    debug!("Servo {} at {}", servo_payload.num, servo_payload.target);
+
     set_servo(
         &SERVOS[servo_payload.num as usize],
         txn,
@@ -195,8 +204,7 @@ pub async fn get_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes>
         return Err(ErrorCodes::InvalidPayloadLen);
     }
 
-    let mut mask = payload[0];
-    const VALID_MASK: u8 = (1 << NUM_SERVOS) - 1;
+    let mask = payload[0];
     if mask & !VALID_MASK != 0 {
         return Err(ErrorCodes::InvalidServoID);
     }
@@ -205,29 +213,35 @@ pub async fn get_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes>
         return Err(ErrorCodes::InvalidServoID);
     }
 
-    //NOTE: 3 u16 for current, target, step
-    const SERVO_INFO_LEN: usize = 6;
-    //NOTE: 1 Extra byte for the mask
-    const BUFF_LEN: usize = SERVO_INFO_LEN * NUM_SERVOS + 1;
+    let mut buff: Vec<u8, SERVO_VEC_LEN> = Vec::new();
+    defmt::unwrap!(buff.push(mask));
+    get_servo_info(mask, &mut buff);
+    Ok(send_servo_info(txn, FunctionCodes::GetServo, &buff).await)
+}
 
-    let mut buff: Vec<u8, BUFF_LEN> = Vec::new();
-    buff.push(mask).ok();
+pub async fn get_servo_all(txn: u16) -> Result<Response, ErrorCodes> {
+    let mut buff: Vec<u8, SERVO_VEC_LEN> = Vec::new();
+    get_servo_info(VALID_MASK, &mut buff);
+    Ok(send_servo_info(txn, FunctionCodes::GetServoAll, &buff).await)
+}
+
+fn get_servo_info(mut mask: u8, vec: &mut Vec<u8, SERVO_VEC_LEN>) {
     while mask != 0 {
         let index = mask.trailing_zeros() as usize;
 
-        defmt::unwrap!(buff.extend_from_slice(
+        defmt::unwrap!(vec.extend_from_slice(
             &SERVOS[index]
                 .current
                 .load(atomic::Ordering::Relaxed)
                 .to_le_bytes()
         ));
-        defmt::unwrap!(buff.extend_from_slice(
+        defmt::unwrap!(vec.extend_from_slice(
             &SERVOS[index]
                 .target
                 .load(atomic::Ordering::Relaxed)
                 .to_le_bytes()
         ));
-        defmt::unwrap!(buff.extend_from_slice(
+        defmt::unwrap!(vec.extend_from_slice(
             &SERVOS[index]
                 .step
                 .load(atomic::Ordering::Relaxed)
@@ -236,14 +250,10 @@ pub async fn get_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes>
 
         mask &= !(1 << index);
     }
+}
 
-    let msg = create_msg(txn, FunctionCodes::GetServo.into(), Some(&buff));
-
-    if let Ok(frame) = msg {
-        OUTBOUND.send(frame).await;
-    } else {
-        return Err(ErrorCodes::VectorError);
-    }
-
-    Ok(Response::NoAck)
+async fn send_servo_info(txn: u16, func: FunctionCodes, buff: &[u8]) -> Response {
+    let frame = defmt::unwrap!(create_msg(txn, func.into(), Some(buff)));
+    OUTBOUND.send(frame).await;
+    Response::NoAck
 }

@@ -1,5 +1,5 @@
 use crate::{
-    servo_handler::{get_servo, handle_set_servo},
+    servo_handler::{get_servo, get_servo_all, handle_set_servo},
     transport,
 };
 use crc16::*;
@@ -21,6 +21,7 @@ enum ParseResult {
     Incomplete,
 }
 
+#[derive(defmt::Format)]
 pub enum FrameError {
     TooLong,
 }
@@ -185,7 +186,7 @@ async fn validate_dispatch(msg: &MsgInfo, payload: &[u8]) {
         Ok(FunctionCodes::Ping) => Ok(Response::SendAck),
         Ok(FunctionCodes::SetServo) => handle_set_servo(msg.txn, payload),
         Ok(FunctionCodes::GetServo) => get_servo(msg.txn, payload).await,
-        Ok(FunctionCodes::GetServoAll) => Ok(Response::NoAck),
+        Ok(FunctionCodes::GetServoAll) => get_servo_all(msg.txn).await,
         Err(_) => Err(ErrorCodes::InvalidFunc),
     };
 

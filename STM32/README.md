@@ -45,7 +45,7 @@ Commands (host → device):
   0x15  PING          liveness check              (len = 0)
   0x20  SET_SERVO     move a servo                (len = 3 or 5)
   0x21  GET_SERVO     read servo state by mask    (len = 1)
-  0x22  GET_SERVO_ALL read all servos             (stub, no reply yet)
+  0x22  GET_SERVO_ALL read all servos             (len = 0)
   (battery / engine commands: TBD)
 
 NACK reasons:
@@ -54,7 +54,9 @@ NACK reasons:
   0x07  invalid_payload_len  (wrong length for this func)
   0x08  invalid_servo_id     (servo index / mask bit out of range)
   0x09  invalid_servo_duty   (target out of range)
-  0x10  vector_error         (device-side buffer/build failure)
+  0x10  vector_error         (reserved; device-side buffer/build failure —
+                              not currently emitted: buffers are sized to fit,
+                              so a build failure panics instead of NACKing)
 ```
 Control and command codes are distinct value ranges. An *inbound* control code
 (host sending ACK/NACK) is treated as a no-op — the device sends no reply.
@@ -82,8 +84,15 @@ self-describing; walk its set bits to map each 6-byte triple to a servo.
 - NACKs: `invalid_payload_len` (len ≠ 1), `invalid_servo_id` (mask has a bit
   ≥ N, or mask == 0).
 
-**GET_SERVO_ALL** `0x22` — stub. Currently consumes the frame and sends **no
-reply** (not yet implemented).
+**GET_SERVO_ALL** `0x22` — payload `[]`. Convenience form of GET_SERVO for every
+servo. Device builds its own reply (no `ACK`), echoing the **original** func code
+so it's self-describing:
+```
+[AB][txn][0x22][len][ per servo, ascending: current:u16, target:u16, step:u16 ]
+```
+Unlike GET_SERVO, the reply carries **no leading mask** — it's always every
+present servo (`0..N`) in ascending order, so `len` is exactly `6 * N`. No NACKs —
+it takes no payload, so there's nothing to reject.
 
 ### Exchange model (per txn)
 Each command handler decides its own reply behaviour — the dispatcher only sends
@@ -95,12 +104,13 @@ a default `ACK`/`NACK` for handlers that ask it to.
      (PING, SET_SERVO).
    - **reject** → dispatcher sends `NACK` `[AB][txn][0x10][1][reason]`.
    - **handler owns the reply** → dispatcher stays silent; the handler has
-     already queued its own frame (GET_SERVO sends its data frame directly).
+     already queued its own frame (GET_SERVO / GET_SERVO_ALL send their data
+     frame directly).
    - inbound control codes and bad-CRC frames get **no reply**.
 3. Some commands add a later **terminal reply** using the **original** func code
    (self-describing), so a txn can span time:
    - SET_SERVO: after the slew finishes → `[AB][txn][0x20][2][current:u16]`.
-   - GET_SERVO: the data frame in step 2 is itself the terminal reply.
+   - GET_SERVO / GET_SERVO_ALL: the data frame in step 2 is itself the terminal reply.
 
 (Frame examples omit the trailing `crc16` for brevity — it's always present.)
 
