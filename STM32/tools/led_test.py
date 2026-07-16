@@ -9,8 +9,7 @@ self-clocks at its own speed and they drift out of phase on their own.
 
 One-way sweep times: LED0 ~1s, LED1 ~2s, LED2 ~3s, LED3 ~4s (set by step size).
 
-Ctrl+C once : snap every LED off (step=0 -> instant) and wait for the ACKs.
-Ctrl+C twice: force exit.
+Ctrl+C: snap every LED off (step=0 -> instant) and exit.
 
 Usage: python3 led_test.py [/dev/ttyACM0]
 """
@@ -65,7 +64,7 @@ def main():
     # kick off: every LED sweeps up; they diverge in phase as they report back.
     for led in range(NUM_LEDS):
         send(led)
-    print("breathing 4 LEDs... Ctrl+C to snap off, twice to force quit")
+    print("breathing 4 LEDs... Ctrl+C to snap off and quit")
 
     try:
         while True:
@@ -77,13 +76,9 @@ def main():
                     send(led)
     except KeyboardInterrupt:
         print("\nsnapping off...")
-        try:
-            missing = snap_off()
-            print("all LEDs off" if not missing
-                  else f"timed out, no ACK for LEDs {missing}")
-        except KeyboardInterrupt:
-            print("\nforce exit")
-            sys.exit(130)
+        missing = snap_off()
+        print("all LEDs off" if not missing
+              else f"timed out, no ACK for LEDs {missing}")
 
 
 if __name__ == "__main__":

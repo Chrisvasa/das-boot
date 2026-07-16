@@ -3,11 +3,11 @@ use crate::{
     transport,
 };
 use crc16::*;
-use defmt::warn;
+use defmt::{error, warn};
 use embassy_futures::join::join;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::Timer;
-use embedded_io_async::{Read, Write};
+use embedded_io_async::{Error, ErrorKind, Read, Write};
 use heapless::Vec;
 
 enum ReadState {
@@ -136,7 +136,12 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
             Ok(n) if n > 0 => parser.buff_len += n,
             Ok(_) => {}
             Err(e) => {
-                warn!("Read error: {:?}", defmt::Debug2Format(&e));
+                match e.kind() {
+                    ErrorKind::NotConnected => {} //NOTE: Dont spam unconnected
+                    _ => {
+                        error!("Read error: {:?}", defmt::Debug2Format(&e));
+                    }
+                }
                 Timer::after_millis(100).await;
             }
         }

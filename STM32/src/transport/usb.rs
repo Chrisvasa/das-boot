@@ -39,7 +39,9 @@ pub async fn setup(
     let driver = Driver::new_fs(up, Irqs, dp, dm, ep_out_buff, config);
     let usb_conf = {
         let mut usb_conf = embassy_usb::Config::new(0xdead, 0xbeef);
-        usb_conf.product = Some("boot-stm");
+        usb_conf.product = Some("Das-boot");
+        usb_conf.manufacturer = Some("Krink-AB");
+        usb_conf.serial_number = Some("133769420");
         usb_conf
     };
 
