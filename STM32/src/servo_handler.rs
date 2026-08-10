@@ -86,7 +86,7 @@ pub async fn pwm_task(
     loop {
         let mut num_stepping: u8 = 0;
         for servo in &SERVOS {
-            match step(&servo) {
+            match step(servo) {
                 ServoState::Idle => {}
                 ServoState::Stepping => {
                     pwm.channel(servo.channel).set_duty_cycle_fraction(
@@ -106,7 +106,7 @@ pub async fn pwm_task(
                         Some(&servo.current.load(atomic::Ordering::Relaxed).to_le_bytes()),
                     );
                     if let Ok(frame) = msg {
-                        let _ = OUTBOUND.try_send(frame);
+                        OUTBOUND.send(frame).await;
                     }
                 }
             }
@@ -185,6 +185,13 @@ pub fn handle_set_servo(txn: u16, payload: &[u8]) -> Result<Response, ErrorCodes
     }
     if servo_payload.target as u32 >= DUTY_DENOM {
         return Err(ErrorCodes::InvalidServoDuty);
+    }
+    if servo_payload.target
+        == SERVOS[servo_payload.num as usize]
+            .current
+            .load(atomic::Ordering::Relaxed)
+    {
+        return Err(ErrorCodes::InvalidServoTarget);
     }
 
     debug!("Servo {} at {}", servo_payload.num, servo_payload.target);

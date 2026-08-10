@@ -50,10 +50,10 @@ pub enum ErrorCodes {
     InvalidPayloadLen = 0x07,
     InvalidServoID = 0x08,
     InvalidServoDuty = 0x09,
-    VectorError = 0x10,
+    InvalidServoTarget = 0x10,
+    VectorError = 0x11,
 }
 
-#[repr(u8)]
 pub enum Response {
     SendAck,
     NoAck,
@@ -138,12 +138,15 @@ async fn read_incoming<R: Read>(mut rx: R) -> ! {
             Ok(_) => {}
             Err(e) => {
                 match e.kind() {
-                    ErrorKind::NotConnected => {} //NOTE: Dont spam unconnected
+                    ErrorKind::NotConnected => {
+                        Timer::after_millis(100).await; //NOTE: Dont spam unconnected
+                    }
                     _ => {
                         error!("Read error: {:?}", defmt::Debug2Format(&e));
+                        parser.buff_len = 0;
+                        parser.state = ReadState::Seeking;
                     }
                 }
-                Timer::after_millis(100).await;
             }
         }
         'parseloop: loop {
