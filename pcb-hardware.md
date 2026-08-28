@@ -1,111 +1,95 @@
 # PCB Hardware
 
-Concrete part options for the STM32 carrier board / power-delivery PCB. See [`hardware-plans.md`](./hardware-plans.md) for the broader architecture context.
+Locked part selection for the power-delivery / STM32 carrier PCB. See [`hardware-plans.md`](./hardware-plans.md) for the broader architecture context.
+
+## Locked targets (2026-08-28)
+
+| Rail | Spec | Load | Regulator |
+|---|---|---|---|
+| 6V servo | 6.0V @ 5A | 4× MG90S | **TI LM61460** |
+| 5V logic | 5.0V @ 3A | Rpi + STM32 + headroom | **TI LMR33630** |
+| 3.3V | 3.3V @ ≤1A | STM32, from 5V rail | LDO (MCP1826S-3302 or similar) |
+
+Both rails are generated in parallel directly from the battery input — never in series. Two *different* buck ICs on purpose: the v1 board doubles as an eval of both parts, which matters more than a shared-BOM win.
+
+The ESC/motor decision is deferred. The ESC taps the battery via a Y-split in the pack lead, **before** the PCB — motor current (up to 30A) never touches the board, so copper, fuse, and connector sizing stays in the ~6–8A range.
 
 ## Design constraints
 
-- **Vin range:** 3S LiPo sag from ~12.6V (charged) down to ~8.5V (loaded near empty). Allow headroom to ~16V for transients.
-- **Rails needed:** 5V @ ≥3A (Rpi + STM32), 6V @ 5–10A (servos), 11.1V (motor via ESC).
-- **Module vs chip-down:** module = drop-in board with through-hole pins, easiest first design. Chip-down = buck IC + L + caps on the PCB, smaller and cheaper at scale. v1 module, v2 chip-down is a sensible progression.
+- **Vin design window: 8.0–13.0V.** Covers 3S LiPo (12.6V charged → ~9V loaded at 3.3V/cell cutoff) *and* a 3S1P Li-ion swap, which is happy down to ~2.75V/cell (~8.25V). Both bucks are 36V-input parts, so the window costs nothing.
+- **Input transient clamp: SMBJ15A** TVS at the battery input. Standoff 15V (clear of 12.6V charged), clamp ~24V — comfortably inside the 36V rating of both bucks. This is the reason the 17V-class bucks were dropped: nothing clamps between 12.6V and 17V with real margin on both sides.
+- **Hot-plate assembly.** Both bucks are thermal-pad packages (QFN / PowerPAD HSOIC) — exactly what the hot plate handles well and hand-ironing doesn't.
 
-## 5V buck — Rpi 4B + STM32 (target ~4–5A)
+## Battery
 
-### Modules
+**Primary: 3S LiPo, 2200 mAh, ≥20C, XT60 + JST-XH balance lead** (~$20).
 
-| Part | Iout | Vin | Form factor | Price |
-|---|---|---|---|---|
-| **Pololu D36V50F5** | 5A | 6–50V | TH pins, 25×17 mm | ~$25 |
-| Pololu D36V28F5 | 3.2A | 6–50V | TH pins, 17×11 mm | ~$15 |
-| Murata OKI-78SR-5 | 1.5A | 7–36V | TO-220-style, drop-in for 7805 | ~$10 |
-| MP1584 module (generic) | ~2.5A real | 4.5–28V | Tiny PCB | ~$2 |
+- Power budget ~30W average (20–50W motor + ~2W Pi Zero 2 W + servo bursts) → ~2.7A draw → roughly 40–60 min mixed running.
+- ~105×34×24 mm, ~180 g — fits an 8 cm hull mounted low for self-righting.
+- 2200 mAh × 20C = 44A available; we draw <10% of that. Exactly the headroom the sealed-hull LiPo safety plan wants.
+- 3000 mAh if the trim budget allows; don't chase runtime beyond that, ballast and trim pay for it.
 
-D36V50F5 is the safe default. MP1584 modules are fine for prototyping but noisy and the 3A spec is optimistic.
+### 3S1P Li-ion swap (test phase)
 
-### Chip-down
+Three Li-ion 18650s in series is still "3S": 12.6V charged, ~10.8V nominal. With matching **XT60 + JST-XH** termination it's a plug-in swap. Caveats:
 
-| Part | Iout | Vin | Notes |
-|---|---|---|---|
-| **TI LMR33630** | 3A | 3.8–36V | HSOP-8, integrated FETs, very simple BOM. WEBENCH generates inductor/caps. |
-| TI TPS54360 | 3.5A | 4.5–60V | Older, well-documented, lots of reference designs |
-| MPS MP2315 | 3A | 4.5–24V | Cheap, small, common in Chinese designs |
-| TI LM5145 | controller | up to 75V | External FETs — overkill, but use this if you want >5A |
+- **Discharge floor** is lower (~2.75–3.0V/cell) — that's why the Vin window is designed to 8V, so the extra capacity is actually usable.
+- **BMS packs usually have no balance connector.** Off-the-shelf protected 18650 packs often expose only two wires, which breaks per-cell ADC monitoring. Either build/buy an unprotected pack with a JST-XH pigtail (charge like a LiPo on the same balance charger), or accept pack-level-only monitoring on those packs.
 
-For Pi 4B + STM32 the **LMR33630** is the sweet spot — switches at 1–2 MHz so the inductor is tiny, and TI's tools generate the whole BOM.
+Good cell if building: Molicel P28A (2.8 Ah, 30A+) — one cell covers the entire load.
 
-## 6V buck — servos (target ~5–10A)
+## Servos — 4× MG90S @ 6V
 
-Size for stall, not average. 4 servos in unison can spike to 6–10A momentarily.
+Standard-voltage servos, no HV. The 7.4V HV rail idea from earlier planning is dead: HV digitals cost 5–10× more and buy nothing at this torque.
 
-### Modules
+- Torque check: a few-cm² fin at 1 m/s sees ~1N; on a ~2 cm horn that's ~0.2 kg·cm. MG90S is 2.2 kg·cm — 10× margin.
+- Current: ~0.7–1A per servo at stall → 4× simultaneous stall ≈ 3–4A worst case → **5A rail spec** with margin.
+- MG996R-class was considered and rejected: 4× stall ≈ 10A would force a different regulator (board respin). If full-size servos ever appear, that's a v2.
+- Ballast piston is a geared DC motor, not on this rail.
 
-| Part | Iout | Vout | Vin | Price |
-|---|---|---|---|---|
-| **Pololu D24V90F6** | 9A | 6V | 4.5–22V | ~$30 |
-| Pololu D36V50F6 | 4.5A | 6V | 6–50V | ~$25 |
-| Hobbywing UBEC 8A | 8A | 5/6V switchable | 2–6S LiPo | ~$15 |
-| Castle BEC 2.0 14A | 14A | adjustable | 2–12S | ~$35 |
+## 6V buck — TI LM61460
 
-D24V90F6 if you want one part to never sweat. Castle BEC is what serious RC people use but it's a finished hobby module, not really board-mountable.
+6A, 3–36V synchronous buck, QFN-12 with wettable flanks (~$3).
 
-### Chip-down
+- 6A covers the 4× stall case with margin; average servo draw is ~1A so steady-state thermals are easy.
+- High-duty-cycle capable — 6V out from 8V sagged input is fine.
+- Wettable flanks: joint is inspectable from the side after hot-plate reflow.
+- Use WEBENCH for the inductor + cap BOM; don't hand-pick.
 
-| Part | Iout | Vin | Notes |
-|---|---|---|---|
-| **TI TPS54824** | 8A | 4.5–17V | Just covers 3S charged; tight margin |
-| TI LM5146 / LM5145 | controller | 5.5–75V | External FETs, scale to whatever current you want |
-| TI TPS54561 | 5A | 4.5–60V | Easy, well-supported |
-| MPS MP4560 | 5A | 4.7–55V | Cheap, single chip |
+## 5V buck — TI LMR33630
 
-For chip-down 6V at high current, lean **LM5146 controller + external FETs** — gives margin and the FETs handle the heat, not the IC.
+3A, 3.8–36V synchronous buck, HSOIC-8 PowerPAD (~$2.50).
 
-## ESC — main motor
+- 3A covers even a Pi 4B; Pi Zero 2 W needs ~1.5A, so big margin at the expected load.
+- Dead-simple BOM, huge number of reference designs, WEBENCH-supported.
+- Available in 400 kHz / 1.4 MHz / 2.1 MHz variants — let WEBENCH pick the frequency/inductor pairing.
 
-ESC sits external to the PCB; the board just provides battery + control signal. Including here so the part choice can be locked alongside the rest.
+## Rejected candidates (and why)
 
-### Brushed (simpler firmware story)
+| Part | Verdict |
+|---|---|
+| TPS565208 | 17V max input: no room for a TVS between 12.6V and abs max; 5A in plain SOT-23-6 has no thermal path |
+| TPS54824 | Same 17V headroom problem; 8A overkill at MG90S stall currents |
+| TPS54561 / TPS54360 | Workable fallbacks, but non-synchronous (external catch diode, ~5% worse efficiency, more board heat) |
+| LM5145 / LM5146 + FETs | Controller + external FETs is a subproject; unnecessary at 5A |
+| MP2315 | Fine cheap alternate for the 5V rail if doing JLCPCB assembly; TI docs are better for a first layout |
+| Pololu modules (D36V50F5, D24V90F6) | Superseded — hot-plate capability makes chip-down viable for v1 |
 
-| ESC | Continuous | Input | Bidir | Price |
-|---|---|---|---|---|
-| **Hobbywing Quicrun 1060** | 60A | 2–3S | yes (car ESC) | ~$25 |
-| Cytron MD30C | 30A | 5–30V | yes | ~$25 |
-| Pololu G2 18v25 | 25A | up to 30V | yes | ~$30 |
-| BTS7960 module (generic) | ~20A real | 5.5–27V | yes | ~$8 |
+## Board-level concerns
 
-Quicrun 1060 is the standard cheap-and-cheerful pick. BTS7960 modules are tempting at $8 but the heatsinks are undersized and the clone FETs are inconsistent.
+- **Inline fuse per rail** from battery, sized just above expected continuous current
+- **Bulk capacitor (470–1000 µF)** on the servo rail output to absorb simultaneous-start / stall transients
+- **SMBJ15A TVS** at the battery input (see design constraints)
+- **TVS diode + fuse at the Pi 5V input** — GPIO has zero overcurrent/overvoltage protection
+- **Reverse-polarity protection**: P-channel MOSFET in series on Vbatt (check Vgs rating against 13V, clamp gate if needed)
+- **JST-XH balance connector footprint** + divider network to STM32 ADC for per-cell monitoring
+- **SWD header** (5 pins: SWDIO, SWCLK, NRST, GND, 3.3V)
+- **Layout**: input ceramic loop (Vin cap → IC → GND) as small as physically possible for each buck; continuous ground pour under both; thermal vias under the exposed pads
+- **Spares**: order 3× of each buck IC — first hot-plate boards eat a chip occasionally
 
-### Brushless (boat/marine — best fit for a sub)
+## Open questions
 
-| ESC | Continuous | Input | Notes | Price |
-|---|---|---|---|---|
-| **Hobbywing Seaking 30A V3** | 30A | 2–3S | water-cooled passages, anti-corrosion coating, native bidir | ~$40 |
-| Hobbywing Seaking 60A V3 | 60A | 2–6S | bigger sibling | ~$70 |
-| Flycolor WinDragon 30A | 30A | 2–3S | cheaper Seaking alternative | ~$30 |
-| Flier Boat ESC 50A | 50A | 2–6S | popular in DIY ROV builds | ~$40 |
-
-**Seaking 30A V3** is the default in hobby submarine builds. 30A is overkill for 1 m/s but smaller marine ESCs don't really exist; not paying much for the headroom.
-
-## v1 board BOM (modules, ~$95)
-
-The "order today, start laying out tomorrow" combo:
-
-- 5V: **Pololu D36V50F5** ($25)
-- 6V: **Pololu D24V90F6** ($30)
-- ESC: **Hobbywing Seaking 30A V3** ($40), external to the PCB
-
-Validates the architecture without burning weeks on chip-down regulator design. Once the system runs, v2 can replace the modules with chip-down designs (LMR33630 for 5V, LM5146-controller for 6V) and shrink the board significantly.
-
-## Board-level concerns (not part selection but related)
-
-- **Inline fuses per rail** from battery, sized just above expected continuous current
-- **Bulk capacitor (470–1000 µF)** on the servo rail to absorb stall transients
-- **TVS diode + fuse** at the Pi 5V input (GPIO has no overcurrent/overvoltage protection)
-- **Voltage divider to STM32 ADC** for battery monitoring (per-cell via balance lead is better than pack-only)
-- **Reverse-polarity protection** on Vbatt input (P-channel MOSFET in series, or a Schottky if you accept the drop)
-- **Ground plane** continuous under all switching regulators; keep switch-node loops small
-- **SWD header** for STM32 programming/debug (5 pins: SWDIO, SWCLK, NRST, GND, 3.3V)
-
-## Open part-selection questions
-
-- Brushed vs brushless motor — decide before finalizing the ESC line
-- Final servo voltage (6V vs 7.4V HV) — affects whether D24V90F6 fixed-6V is the right module
-- Number of servos — drives the 6V rail sizing
+- Brushed vs brushless motor + ESC pick — deferred, off-board either way
+- 3.3V LDO final pick (MCP1826S-3302 carried over from the old schematic; anything 500 mA+ from 5V works)
+- Whether the test-phase 3S1P pack keeps a balance lead (drives whether per-cell monitoring survives the swap)
+- Servo/ESC connector style on the board (standard 0.1" 3-pin headers?)
