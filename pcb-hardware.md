@@ -7,106 +7,118 @@ Locked part selection for the power-delivery / STM32 carrier PCB. See [`hardware
 | Rail | Spec | Load | Regulator |
 |---|---|---|---|
 | 6V servo | 6.0V @ 5A | 4× MG90S | **TI TPS56837** (LCSC C22428366) |
-| 5V logic | 5.0V @ 3A | Rpi + STM32 + headroom | **TI LMR33630** |
+| 5V logic | 5.0V @ 3A | Rpi + STM32 + headroom | **TI TPS56837** (same part) |
 | 3.3V | 3.3V @ ≤1A | STM32, from 5V rail | LDO (MCP1826S-3302 or similar) |
 
-Both rails are generated in parallel directly from the battery input — never in series. Two *different* buck ICs on purpose: the v1 board doubles as an eval of both parts, which matters more than a shared-BOM win.
+Both rails are generated in parallel directly from the battery bus — never in series. Deliberately the **same buck IC twice**: one proven design stamped at two operating points, identical BOM except four passives, interchangeable spares. (Originally two different ICs for evaluation; WEBENCH recommending the TPS56837 for both rails settled it.)
 
 The ESC/motor decision is deferred. The ESC taps the battery via a Y-split in the pack lead, **before** the PCB — motor current (up to 30A) never touches the board, so copper, fuse, and connector sizing stays in the ~6–8A range.
 
+### Per-rail circuit values (from TPS5683x datasheet Table 7-2, 500 kHz)
+
+| | FB divider | L (Isat) | C_ff | MODE | EN |
+|---|---|---|---|---|---|
+| 5V | 73.2k / 10k | 3.3 µH (≥6A) | 150 pF | 30.1k | floating = always on |
+| 6V | 90.9k / 10k | 4.7 µH (≥8A) | 100 pF | 30.1k | MCU GPIO + 100k pulldown = **off by default** |
+
+- Shared per rail: 2× 10 µF + 100 nF input, 2× 22 µF 25V X7R output, 100 nF BOOT, 22 nF SS, optional 49.9 Ω loop-injection resistor between VOUT and the FB divider (gain/phase measurement).
+- **PG pull-ups (100k) go to the 5V rail on both converters** — PG abs max is 6V, so never to the 6V output.
+- 6V EN logic: STM32 GPIO drives EN directly (3.3V > 1.26V max enable threshold, < 6V abs max). The 100k pulldown holds the rail off while the MCU is high-Z (boot, reset, reflash) — every enable ramps through soft-start into the servo bulk cap. L2 Isat ≥ 8A because the current-limit hiccup lets the inductor reach ~8A peak.
+
 ## Design constraints
 
-- **Vin design window: 8.0–13.0V.** Covers 3S LiPo (12.6V charged → ~9V loaded at 3.3V/cell cutoff) *and* a 3S1P Li-ion swap, which is happy down to ~2.75V/cell (~8.25V). Both bucks are 36V-input parts, so the window costs nothing.
-- **Input transient clamp: SMBJ15A** TVS at the battery input. Standoff 15V (clear of 12.6V charged), clamp ~24V — comfortably inside the 36V rating of both bucks. This is the reason the 17V-class bucks were dropped: nothing clamps between 12.6V and 17V with real margin on both sides.
-- **Hot-plate assembly.** Both bucks are thermal-pad packages (QFN / PowerPAD HSOIC) — exactly what the hot plate handles well and hand-ironing doesn't.
+- **Vin design window: 8.0–13.0V.** Covers 3S LiPo (12.6V charged → ~9V loaded at 3.3V/cell cutoff) *and* 3S1P Li-ion (happy down to ~2.75V/cell ≈ 8.25V). The 28V-rated bucks make the window free.
+- **Input transient clamp: SMBJ15A** TVS on the common battery bus. Standoff 15V, clamp ~24V — inside the TPS56837's 32V abs max with margin. (This margin is why every 16/17V-class buck was rejected.)
+- **Hot-plate assembly.** All active parts are thermal-pad packages.
 
-## Battery
+## Battery input — parallel packs with ideal-diode ORing
 
-**Primary: 3S LiPo, 2200 mAh, ≥20C, XT60 + JST-XH balance lead** (~$20).
+Multiple 3S packs in parallel, each individually MCU-disconnectable (low SoC → drop the pack). Direct paralleling is forbidden (circulating current between mismatched-SoC LiPos), and a single FET can't disconnect a battery (body diode). Solution, per battery port:
 
-- Power budget ~30W average (20–50W motor + ~2W Pi Zero 2 W + servo bursts) → ~2.7A draw → roughly 40–60 min mixed running.
-- ~105×34×24 mm, ~180 g — fits an 8 cm hull mounted low for self-righting.
-- 2200 mAh × 20C = 44A available; we draw <10% of that. Exactly the headroom the sealed-hull LiPo safety plan wants.
-- 3000 mAh if the trim budget allows; don't chase runtime beyond that, ballast and trim pay for it.
+**TI LM7480x-Q1 ideal-diode controller + back-to-back N-FETs** (one dual-FET SO-8/PowerPAK per port):
+
+- DGATE FET = ideal diode (~20 mV drop): current only ever flows *out* of a pack — mismatched SoC is safe, packs share naturally as they converge. **Replaces the reverse-polarity P-FET** (this stage *is* the reverse protection).
+- HGATE FET = series disconnect, driven via EN from the MCU.
+- **EN pulls UP (default ON)** — opposite polarity to the servo rail. If ports defaulted off, no pack could power the MCU that enables them.
+- **Firmware rule: never disconnect the last live pack.** MCU dies → pull-ups re-enable → reboot → re-disconnect = brownout oscillation with servos attached. Below last-pack cutoff the action is surface-and-shutdown, not disconnect.
+- Pack voltage divider per port on the **battery side** of the FETs → ADC reads near-OCV on a non-conducting pack (much better SoC estimate than under-load). Pack-level sense per port; one JST-XH balance connector for the primary pack.
+- v1: 2 ports, XT30 each. ~$3/port (LM7480x + dual FET + passives), identical blocks.
+
+### Bus bulk capacitance
+
+**100–220 µF aluminum electrolytic (35V, low-impedance) on the common battery bus**, in addition to the per-buck ceramics:
+
+- Main reason: **hot-plug damping.** Ceramics + battery-lead inductance ring on connect — worst case ~2× overshoot. The electrolytic's ESR damps the ring; the SMBJ15A catches what's left.
+- Pack-switchover hold-up is nearly free: an already-conducting port never opens, and even a ~10 µs gap at 8A only dips 0.36V on 220 µF.
+- Re-enable inrush into the bus caps is slew-limited by the LM7480x's controlled HGATE turn-on — no extra capacitance needed for that.
+
+## Battery packs
+
+**Primary: 3S LiPo, 2200 mAh, ≥20C, XT30/XT60 + JST-XH balance lead** (~$20 each).
+
+- ~30W average draw → ~40–60 min per pack; parallel ports scale runtime linearly.
+- 2200 mAh × 20C = 44A available per pack; we draw <10%. Mount low for self-righting.
 
 ### 3S1P Li-ion swap (test phase)
 
-Three Li-ion 18650s in series is still "3S": 12.6V charged, ~10.8V nominal. With matching **XT60 + JST-XH** termination it's a plug-in swap. Caveats:
+Three 18650s in series = still "3S" (12.6V charged, ~10.8V nominal); with matching connectors it's plug-in. Vin window already covers the lower ~2.75V/cell floor. Caveat: BMS-protected packs usually omit the balance connector → pack-level-only monitoring (which the per-port dividers provide anyway). Good cell if building: Molicel P28A.
 
-- **Discharge floor** is lower (~2.75–3.0V/cell) — that's why the Vin window is designed to 8V, so the extra capacity is actually usable.
-- **BMS packs usually have no balance connector.** Off-the-shelf protected 18650 packs often expose only two wires, which breaks per-cell ADC monitoring. Either build/buy an unprotected pack with a JST-XH pigtail (charge like a LiPo on the same balance charger), or accept pack-level-only monitoring on those packs.
+## Buck converter — TPS56837 (both rails)
 
-Good cell if building: Molicel P28A (2.8 Ah, 30A+) — one cell covers the entire load.
+8A, 4.5–28V synchronous buck, D-CAP3, Eco-mode, VQFN-HR-10 (HotRod) 3×3 mm (~$1.30/1ku). Datasheet: SLVSGM3B.
 
-## Servos — 4× MG90S @ 6V
-
-Standard-voltage servos, no HV. The 7.4V HV rail idea from earlier planning is dead: HV digitals cost 5–10× more and buy nothing at this torque.
-
-- Torque check: a few-cm² fin at 1 m/s sees ~1N; on a ~2 cm horn that's ~0.2 kg·cm. MG90S is 2.2 kg·cm — 10× margin.
-- Current: ~0.7–1A per servo at stall → 4× simultaneous stall ≈ 3–4A worst case → **5A rail spec** with margin.
-- MG996R-class was considered and rejected: 4× stall ≈ 10A would force a different regulator (board respin). If full-size servos ever appear, that's a v2.
-- Ballast piston is a geared DC motor, not on this rail.
-
-## 6V buck — TI TPS56837
-
-8A, 4.5–28V synchronous buck, D-CAP3, VQFN-HR-10 (HotRod) 3×3 mm (~$1.30/1ku, LCSC C22428366). Datasheet: SLVSGM3B.
-
-- **32V abs max / 28V recommended input** — the SMBJ15A input TVS (clamp ~24V worst case) fits below even the recommended max. This margin is why the WEBENCH-suggested 16V-class parts (TPS565242/47) were passed over.
-- 8A covers the 4× MG90S stall case with 2× margin; a buck loafing at 40–60% of rating runs in its peak-efficiency region. Current limit is resistor-selectable via the MODE pin.
-- Excellent thermals: HotRod flip-chip (no bond wires), 20.4/9.5 mΩ FETs, effective RθJA 30°C/W on a 4-layer board.
-- 500/800/1200 kHz selectable via MODE resistor — use 500 kHz at 12V→6V (WEBENCH design: 95% efficiency, 12-part BOM).
-- Supports 98% duty — 6V out from an 8V sagged input is fine.
-- **Variants, pin-to-pin in the same footprint:** TPS56837 = Eco-mode (pulse-skipping, 45 µA Iq — best battery runtime; servos don't care about light-load ripple). **TPS56838 = FCCM** drop-in if light-load ripple ever becomes a problem. TPS56836 = Out-of-Audio.
-- **Inspection caveat:** HotRod terminals are bottom-only — no side fillet to inspect after reflow. Plan on a stencil (TI's example: 0.1 mm, 89% paste coverage on the SW/PGND tabs), and route PG (power-good) to an LED or test point for electrical verification.
-- Layout: AGND and PGND tie at a single point; input ceramics tight between VIN and PGND pins; thermal vias in the PGND land.
-
-## 5V buck — TI LMR33630
-
-3A, 3.8–36V synchronous buck, HSOIC-8 PowerPAD (~$2.50).
-
-- 3A covers even a Pi 4B; Pi Zero 2 W needs ~1.5A, so big margin at the expected load.
-- Dead-simple BOM, huge number of reference designs, WEBENCH-supported.
-- Available in 400 kHz / 1.4 MHz / 2.1 MHz variants — let WEBENCH pick the frequency/inductor pairing.
+- 32V abs max input → TVS fits; 8A → 2× margin at servo stall; effective RθJA 30°C/W (4-layer); 98% duty OK from 8V sag; 500 kHz via MODE 30.1k.
+- **Variants, pin-to-pin:** TPS56838 = FCCM drop-in if light-load ripple ever matters; TPS56836 = Out-of-Audio. Eco-mode's 45 µA Iq is the right default on battery.
+- **Inspection:** HotRod terminals are bottom-only — stencil (0.1 mm, 89% paste on SW/PGND tabs per TI), verify via PG. Route PG to LED/test point.
+- Layout: AGND–PGND tie at one point; input ceramics tight between VIN and PGND; thermal vias in the PGND land.
 
 ## Rejected candidates (and why)
 
 | Part | Verdict |
 |---|---|
+| LMR33630 | Fine part, was the 5V pick; dropped for BOM commonality once TPS56837 covered both rails |
 | LM61460 | Good part (6A, 36V, wettable flanks), but TPS56837 beats it on price, current headroom, and thermals |
-| TPS565242 / TPS565247 | WEBENCH's cost-ranked suggestions at Vmax=14V. 16V rec / 18V abs max input: no TVS fits between 12.6V and abs max; SOT-563 has no thermal pad (eff. RθJA 58°C/W) |
-| TPS565208 | Same 17V-class headroom problem; 5A in plain SOT-23-6 has no thermal path |
-| LM5148 | Controller + external FETs, 19-part BOM — gate-drive layout subproject for no benefit at 5A |
-| TPS54824 | Same 17V headroom problem; 8A overkill at MG90S stall currents |
-| TPS54561 / TPS54360 | Workable fallbacks, but non-synchronous (external catch diode, ~5% worse efficiency, more board heat) |
-| LM5145 / LM5146 + FETs | Controller + external FETs is a subproject; unnecessary at 5A |
-| MP2315 | Fine cheap alternate for the 5V rail if doing JLCPCB assembly; TI docs are better for a first layout |
-| Pololu modules (D36V50F5, D24V90F6) | Superseded — hot-plate capability makes chip-down viable for v1 |
+| TPS565242 / TPS565247 | WEBENCH cost-ranked picks at Vmax=14V. 16V rec / 18V abs max: no TVS fits; SOT-563 has no thermal pad |
+| TPS565208 | Same 17V-class headroom problem; 5A in SOT-23-6 has no thermal path |
+| LM5148 / TPS40305 | Controllers + external FETs: gate-drive layout subproject, 19-part BOM, no benefit at 5A |
+
+## Connectors
+
+| Function | Symbol | Footprint (stock KiCad) |
+|---|---|---|
+| Battery ports (2×) | Conn_01x02 | `AMASS_XT30PW-M_1x02_P2.50mm_Horizontal` (board = male; battery = female) |
+| Balance (primary pack) | Conn_01x04 | `JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical` (pin 1 = pack −) |
+| Servos (4×) | Conn_01x03 | `PinHeader_1x03_P2.54mm_Vertical` — JR pinout: 1 = signal, 2 = +6V, 3 = GND; identical orientation + silk labels |
+| MCU / control | Conn_01xNN | 0.1" header: 4× servo PWM, 6V ENA, PG×2, per-port battery EN + ADC sense |
+
+Servo 6V/GND fan out **after** the servo-rail bulk cap so stall transients hit the cap, not the buck.
 
 ## Custom KiCad library
 
 Project-local library at the schematic root (`PCB/`), registered in `sym-lib-table` / `fp-lib-table` via `${KIPRJMOD}` — carries parts that don't exist in stock KiCad:
 
-- `das-boot.kicad_sym` — symbols (TPS56837RPAR, with correct pin numbering and electrical types)
-- `das-boot.pretty/` — footprints. `TPS5683x_VQFN-HR-10_3x3mm_RPA0010A` is built to the TI datasheet land pattern (pad positions verified against the SLVSGM3B land pattern example, incl. the VIN comb fingers), NSMD with 0.07 mm mask margin and 89% paste on the SW/PGND tabs per TI's stencil example. Shared by TPS56837/38/36.
-- `das-boot.3dshapes/` — STEP + WRL models (sourced from the EasyEDA library; cosmetic only — verify alignment in the 3D viewer)
+- `das-boot.kicad_sym` — symbols (TPS56837RPAR, correct pin numbering and electrical types)
+- `das-boot.pretty/` — footprints. `TPS5683x_VQFN-HR-10_3x3mm_RPA0010A` built to the TI land pattern (verified against the SLVSGM3B land-pattern example incl. the VIN comb fingers), NSMD 0.07 mm mask margin, 89% paste on SW/PGND tabs. Shared by TPS56837/38/36.
+- `das-boot.3dshapes/` — STEP + WRL (EasyEDA-sourced, cosmetic; check alignment in 3D viewer)
 
-The EasyEDA/LCSC footprint for this part was checked and rejected: pads shifted 0.05–0.06 mm vs the TI land pattern, wrong SW pad length, and MODE mis-numbered as pad 12.
+The EasyEDA/LCSC footprint was checked and rejected: pads shifted 0.05–0.06 mm, wrong SW pad length, MODE mis-numbered as pad 12. LM7480x symbol/footprint TBD (likely stock-compatible packages; add to das-boot lib if not).
 
 ## Board-level concerns
 
-- **Inline fuse per rail** from battery, sized just above expected continuous current
-- **Bulk capacitor (470–1000 µF)** on the servo rail output to absorb simultaneous-start / stall transients
-- **SMBJ15A TVS** at the battery input (see design constraints)
-- **TVS diode + fuse at the Pi 5V input** — GPIO has zero overcurrent/overvoltage protection
-- **Reverse-polarity protection**: P-channel MOSFET in series on Vbatt (check Vgs rating against 13V, clamp gate if needed)
-- **JST-XH balance connector footprint** + divider network to STM32 ADC for per-cell monitoring
-- **SWD header** (5 pins: SWDIO, SWCLK, NRST, GND, 3.3V)
-- **Layout**: input ceramic loop (Vin cap → IC → GND) as small as physically possible for each buck; continuous ground pour under both; thermal vias under the exposed pads
-- **Spares**: order 3× of each buck IC — first hot-plate boards eat a chip occasionally
+- **Inline fuse per rail** from battery bus, sized just above expected continuous current
+- **Bulk capacitor (470–1000 µF)** on the servo rail output for stall transients
+- **SMBJ15A TVS + 100–220 µF electrolytic** on the common battery bus (see bus bulk capacitance)
+- **TVS diode + fuse at the Pi 5V input** — GPIO has zero protection
+- Reverse-polarity protection: **covered by the ideal-diode input stage** (P-FET no longer needed)
+- **Per-port pack divider → STM32 ADC**; JST-XH for the primary pack
+- **SWD header** (SWDIO, SWCLK, NRST, GND, 3.3V)
+- **Layout**: minimal input ceramic loops at each buck; continuous ground pour; thermal vias under pads
+- **Spares**: 3× of each IC — first hot-plate boards eat a chip occasionally
 
 ## Open questions
 
 - Brushed vs brushless motor + ESC pick — deferred, off-board either way
-- 3.3V LDO final pick (MCP1826S-3302 carried over from the old schematic; anything 500 mA+ from 5V works)
-- Whether the test-phase 3S1P pack keeps a balance lead (drives whether per-cell monitoring survives the swap)
-- Servo/ESC connector style on the board (standard 0.1" 3-pin headers?)
+- 3.3V LDO final pick (anything 500 mA+ from 5V works)
+- LM7480x variant + dual-FET part selection for the battery ports
+- Whether port 2 also gets a balance connector (per-cell sense on both packs vs pack-level only)
+- MCU on this board (chip-down STM32F411) vs Black Pill carrier for v1 — drives the control connector pinout
