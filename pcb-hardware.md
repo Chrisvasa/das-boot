@@ -6,7 +6,7 @@ Locked part selection for the power-delivery / STM32 carrier PCB. See [`hardware
 
 | Rail | Spec | Load | Regulator |
 |---|---|---|---|
-| 6V servo | 6.0V @ 5A | 4× MG90S | **TI LM61460** |
+| 6V servo | 6.0V @ 5A | 4× MG90S | **TI TPS56837** (LCSC C22428366) |
 | 5V logic | 5.0V @ 3A | Rpi + STM32 + headroom | **TI LMR33630** |
 | 3.3V | 3.3V @ ≤1A | STM32, from 5V rail | LDO (MCP1826S-3302 or similar) |
 
@@ -47,14 +47,18 @@ Standard-voltage servos, no HV. The 7.4V HV rail idea from earlier planning is d
 - MG996R-class was considered and rejected: 4× stall ≈ 10A would force a different regulator (board respin). If full-size servos ever appear, that's a v2.
 - Ballast piston is a geared DC motor, not on this rail.
 
-## 6V buck — TI LM61460
+## 6V buck — TI TPS56837
 
-6A, 3–36V synchronous buck, QFN-12 with wettable flanks (~$3).
+8A, 4.5–28V synchronous buck, D-CAP3, VQFN-HR-10 (HotRod) 3×3 mm (~$1.30/1ku, LCSC C22428366). Datasheet: SLVSGM3B.
 
-- 6A covers the 4× stall case with margin; average servo draw is ~1A so steady-state thermals are easy.
-- High-duty-cycle capable — 6V out from 8V sagged input is fine.
-- Wettable flanks: joint is inspectable from the side after hot-plate reflow.
-- Use WEBENCH for the inductor + cap BOM; don't hand-pick.
+- **32V abs max / 28V recommended input** — the SMBJ15A input TVS (clamp ~24V worst case) fits below even the recommended max. This margin is why the WEBENCH-suggested 16V-class parts (TPS565242/47) were passed over.
+- 8A covers the 4× MG90S stall case with 2× margin; a buck loafing at 40–60% of rating runs in its peak-efficiency region. Current limit is resistor-selectable via the MODE pin.
+- Excellent thermals: HotRod flip-chip (no bond wires), 20.4/9.5 mΩ FETs, effective RθJA 30°C/W on a 4-layer board.
+- 500/800/1200 kHz selectable via MODE resistor — use 500 kHz at 12V→6V (WEBENCH design: 95% efficiency, 12-part BOM).
+- Supports 98% duty — 6V out from an 8V sagged input is fine.
+- **Variants, pin-to-pin in the same footprint:** TPS56837 = Eco-mode (pulse-skipping, 45 µA Iq — best battery runtime; servos don't care about light-load ripple). **TPS56838 = FCCM** drop-in if light-load ripple ever becomes a problem. TPS56836 = Out-of-Audio.
+- **Inspection caveat:** HotRod terminals are bottom-only — no side fillet to inspect after reflow. Plan on a stencil (TI's example: 0.1 mm, 89% paste coverage on the SW/PGND tabs), and route PG (power-good) to an LED or test point for electrical verification.
+- Layout: AGND and PGND tie at a single point; input ceramics tight between VIN and PGND pins; thermal vias in the PGND land.
 
 ## 5V buck — TI LMR33630
 
@@ -68,12 +72,25 @@ Standard-voltage servos, no HV. The 7.4V HV rail idea from earlier planning is d
 
 | Part | Verdict |
 |---|---|
-| TPS565208 | 17V max input: no room for a TVS between 12.6V and abs max; 5A in plain SOT-23-6 has no thermal path |
+| LM61460 | Good part (6A, 36V, wettable flanks), but TPS56837 beats it on price, current headroom, and thermals |
+| TPS565242 / TPS565247 | WEBENCH's cost-ranked suggestions at Vmax=14V. 16V rec / 18V abs max input: no TVS fits between 12.6V and abs max; SOT-563 has no thermal pad (eff. RθJA 58°C/W) |
+| TPS565208 | Same 17V-class headroom problem; 5A in plain SOT-23-6 has no thermal path |
+| LM5148 | Controller + external FETs, 19-part BOM — gate-drive layout subproject for no benefit at 5A |
 | TPS54824 | Same 17V headroom problem; 8A overkill at MG90S stall currents |
 | TPS54561 / TPS54360 | Workable fallbacks, but non-synchronous (external catch diode, ~5% worse efficiency, more board heat) |
 | LM5145 / LM5146 + FETs | Controller + external FETs is a subproject; unnecessary at 5A |
 | MP2315 | Fine cheap alternate for the 5V rail if doing JLCPCB assembly; TI docs are better for a first layout |
 | Pololu modules (D36V50F5, D24V90F6) | Superseded — hot-plate capability makes chip-down viable for v1 |
+
+## Custom KiCad library
+
+Project-local library at the schematic root (`PCB/`), registered in `sym-lib-table` / `fp-lib-table` via `${KIPRJMOD}` — carries parts that don't exist in stock KiCad:
+
+- `das-boot.kicad_sym` — symbols (TPS56837RPAR, with correct pin numbering and electrical types)
+- `das-boot.pretty/` — footprints. `TPS5683x_VQFN-HR-10_3x3mm_RPA0010A` is built to the TI datasheet land pattern (pad positions verified against the SLVSGM3B land pattern example, incl. the VIN comb fingers), NSMD with 0.07 mm mask margin and 89% paste on the SW/PGND tabs per TI's stencil example. Shared by TPS56837/38/36.
+- `das-boot.3dshapes/` — STEP + WRL models (sourced from the EasyEDA library; cosmetic only — verify alignment in the 3D viewer)
+
+The EasyEDA/LCSC footprint for this part was checked and rejected: pads shifted 0.05–0.06 mm vs the TI land pattern, wrong SW pad length, and MODE mis-numbered as pad 12.
 
 ## Board-level concerns
 

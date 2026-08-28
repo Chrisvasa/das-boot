@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "das-boot")(type "KiCad")(uri "${KIPRJMOD}/das-boot.kicad_sym")(options "")(descr "das-boot project parts not in stock KiCad libraries"))
+)
