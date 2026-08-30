@@ -22,7 +22,7 @@ The ESC/motor decision is deferred. The ESC taps the battery via a Y-split in th
 | 6V | 90.9k / 10k | 4.7 µH (≥8A) | 100 pF | 30.1k | MCU GPIO + 100k pulldown = **off by default** |
 
 - Shared per rail: 2× 10 µF + 100 nF input, 2× 22 µF 25V X7R output, 100 nF BOOT, 22 nF SS, optional 49.9 Ω loop-injection resistor between VOUT and the FB divider (gain/phase measurement).
-- **PG pull-ups (100k) go to the 5V rail on both converters** — PG abs max is 6V, so never to the 6V output.
+- **PG:** U1 (5V) PG → 100k to 5V, board test point only (if firmware runs, 5V is fine). U2 (6V) PG → J5 pin 14, open-drain with **no board pull-up — firmware must enable the STM32 internal pull-up** on that input (keeps the pin at 3.3V). FW contract: PG high within ~2 ms of raising 6V ENA; if it drops while enabled, kill servos.
 - 6V EN logic: STM32 GPIO drives EN directly (3.3V > 1.26V max enable threshold, < 6V abs max). The 100k pulldown holds the rail off while the MCU is high-Z (boot, reset, reflash) — every enable ramps through soft-start into the servo bulk cap. L2 Isat ≥ 8A because the current-limit hiccup lets the inductor reach ~8A peak.
 
 ## Design constraints
@@ -39,10 +39,11 @@ Multiple 3S packs in parallel, each individually MCU-disconnectable (low SoC →
 
 - DGATE FET = ideal diode (~20 mV drop): current only ever flows *out* of a pack — mismatched SoC is safe, packs share naturally as they converge. **Replaces the reverse-polarity P-FET** (this stage *is* the reverse protection).
 - HGATE FET = series disconnect, driven via EN from the MCU.
-- **EN pulls UP (default ON)** — opposite polarity to the servo rail. If ports defaulted off, no pack could power the MCU that enables them.
+- **EN pulls UP to its own pack (100k) = default ON** — opposite polarity to the servo rail. If ports defaulted off, no pack could power the MCU that enables them (the disconnect FET's body diode blocks battery→bus). MCU disconnects a port via a 2N7002 (drain→EN, source→GND, gate→J5 with 100k pulldown); GPIO high = pack off.
 - **Firmware rule: never disconnect the last live pack.** MCU dies → pull-ups re-enable → reboot → re-disconnect = brownout oscillation with servos attached. Below last-pack cutoff the action is surface-and-shutdown, not disconnect.
-- Pack voltage divider per port on the **battery side** of the FETs → ADC reads near-OCV on a non-conducting pack (much better SoC estimate than under-load). Pack-level sense per port; one JST-XH balance connector for the primary pack.
-- v1: 2 ports, XT30 each. ~$3/port (LM7480x + dual FET + passives), identical blocks.
+- Pack sensing per port via the LM7480x **SW ladder** (SW → 75k → MON tap → 16.2k → OV tap → 8.87k → GND): monitor ratio ≈ 1/4 to the ADC, OV trip ≈ 13.9V (rejects an accidental 4S pack), and the ladder auto-disconnects when the port is disabled (zero standby drain — but a disabled pack reads 0V, by design).
+- **No on-board balance header in v1.** The ideal diodes share load *between* packs; cell balance *inside* each pack is the external balance charger's job. Ops rule: balance-charge every pack after every session — the charger is the per-cell safety check. Per-cell monitoring deferred to v2 (needs ADC channels the J5 ribbon doesn't have).
+- v1: 3 ports, XT30 each (2× CSD18540Q5B common-drain, SMAJ15A per port). Identical blocks.
 
 ### Bus bulk capacitance
 
@@ -86,10 +87,11 @@ Three 18650s in series = still "3S" (12.6V charged, ~10.8V nominal); with matchi
 
 | Function | Symbol | Footprint (stock KiCad) |
 |---|---|---|
-| Battery ports (2×) | Conn_01x02 | `AMASS_XT30PW-M_1x02_P2.50mm_Horizontal` (board = male; battery = female) |
-| Balance (primary pack) | Conn_01x04 | `JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical` (pin 1 = pack −) |
+| Battery ports (3×) | Conn_01x02 | `AMASS_XT30PW-M_1x02_P2.50mm_Horizontal` (board = male; battery = female; packs need XT60→XT30 pigtails) |
 | Servos (4×) | Conn_01x03 | `PinHeader_1x03_P2.54mm_Vertical` — JR pinout: 1 = signal, 2 = +6V, 3 = GND; identical orientation + silk labels |
-| MCU / control | Conn_01xNN | 0.1" header: 4× servo PWM, 6V ENA, PG×2, per-port battery EN + ADC sense |
+| MCU / control (J5) | Conn_02x08 | `PinHeader_2x08_P2.54mm_Vertical` — NB: symbol is Top_Bottom-numbered, footprint pads are odd/even; print the real pinout from layout before crimping |
+
+J5 pinout: 1/3/5 = BAT1/2/3 enable (high = disconnect), 2/4/6 = BAT1/2/3 monitor, 7/15/16 = GND, 8 = 5V, 9–12 = servo signals S1–S4, 13 = 6V ENA (high = servo rail on), 14 = 6V PG (open-drain, enable internal pull-up).
 
 Each servo header gets a local 220 µF 16V polymer cap placed at the connector, so stall transients close their loop locally instead of at the buck.
 
