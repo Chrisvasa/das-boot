@@ -111,4 +111,132 @@
       )
     )
   )
+
+  (symbol "LM74800QDRRRQ1"
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "U"
+      (id 0)
+      (at 0 11.43 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "LM74800QDRRRQ1"
+      (id 1)
+      (at 0 -15.24 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "das-boot:LM7480x_WSON-12_3x3mm_DRR0012E"
+      (id 2)
+      (at 0 -17.78 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/lm7480-q1.pdf"
+      (id 3)
+      (at 0 -20.32 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "LCSC Part" "C3215600"
+      (id 4)
+      (at 0 -22.86 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "ki_description" "Ideal diode controller with load disconnect: drives back-to-back NFETs (common drain). DGATE = ideal diode (10.5mV A-to-C regulation), HGATE = on/off switch via EN/UVLO. 3-65V. RTN thermal pad: solder but leave electrically floating."
+      (id 5)
+      (at 0 -25.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "ki_keywords" "ideal diode ORing reverse polarity battery LM74801"
+      (id 6)
+      (at 0 -27.94 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "LM74800QDRRRQ1_0_1"
+      (rectangle
+        (start -10.16 10.16)
+        (end 10.16 -10.16)
+        (stroke (width 0.254) (type default))
+        (fill (type background))
+      )
+    )
+    (symbol "LM74800QDRRRQ1_1_1"
+      (pin passive line
+        (at -12.7 7.62 0)
+        (length 2.54)
+        (name "A" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at -12.7 5.08 0)
+        (length 2.54)
+        (name "DGATE" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -12.7 2.54 0)
+        (length 2.54)
+        (name "VSNS" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -12.7 0 0)
+        (length 2.54)
+        (name "SW" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -12.7 -2.54 0)
+        (length 2.54)
+        (name "OV" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -12.7 -5.08 0)
+        (length 2.54)
+        (name "EN/UVLO" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 12.7 7.62 180)
+        (length 2.54)
+        (name "C" (effects (font (size 1.27 1.27))))
+        (number "12" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 12.7 5.08 180)
+        (length 2.54)
+        (name "CAP" (effects (font (size 1.27 1.27))))
+        (number "11" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 12.7 2.54 180)
+        (length 2.54)
+        (name "VS" (effects (font (size 1.27 1.27))))
+        (number "10" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 12.7 0 180)
+        (length 2.54)
+        (name "OUT" (effects (font (size 1.27 1.27))))
+        (number "9" (effects (font (size 1.27 1.27))))
+      )
+      (pin output line
+        (at 12.7 -2.54 180)
+        (length 2.54)
+        (name "HGATE" (effects (font (size 1.27 1.27))))
+        (number "8" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at -2.54 -12.7 90)
+        (length 2.54)
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 2.54 -12.7 90)
+        (length 2.54)
+        (name "RTN" (effects (font (size 1.27 1.27))))
+        (number "13" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
 )

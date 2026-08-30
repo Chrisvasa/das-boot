@@ -91,22 +91,24 @@ Three 18650s in series = still "3S" (12.6V charged, ~10.8V nominal); with matchi
 | Servos (4×) | Conn_01x03 | `PinHeader_1x03_P2.54mm_Vertical` — JR pinout: 1 = signal, 2 = +6V, 3 = GND; identical orientation + silk labels |
 | MCU / control | Conn_01xNN | 0.1" header: 4× servo PWM, 6V ENA, PG×2, per-port battery EN + ADC sense |
 
-Servo 6V/GND fan out **after** the servo-rail bulk cap so stall transients hit the cap, not the buck.
+Each servo header gets a local 220 µF 16V polymer cap placed at the connector, so stall transients close their loop locally instead of at the buck.
 
 ## Custom KiCad library
 
 Project-local library at the schematic root (`PCB/`), registered in `sym-lib-table` / `fp-lib-table` via `${KIPRJMOD}` — carries parts that don't exist in stock KiCad:
 
-- `das-boot.kicad_sym` — symbols (TPS56837RPAR, correct pin numbering and electrical types)
-- `das-boot.pretty/` — footprints. `TPS5683x_VQFN-HR-10_3x3mm_RPA0010A` built to the TI land pattern (verified against the SLVSGM3B land-pattern example incl. the VIN comb fingers), NSMD 0.07 mm mask margin, 89% paste on SW/PGND tabs. Shared by TPS56837/38/36.
+- `das-boot.kicad_sym` — symbols: TPS56837RPAR, LM74800QDRRRQ1 (correct pin numbering and electrical types)
+- `das-boot.pretty/` — footprints, built to the TI datasheet land patterns and render-verified:
+  - `TPS5683x_VQFN-HR-10_3x3mm_RPA0010A` (SLVSGM3B; incl. VIN comb fingers, 89% paste on SW/PGND tabs)
+  - `LM7480x_WSON-12_3x3mm_DRR0012E` (SNOSD95C; **pad 13 / RTN: solder but leave electrically floating — isolated island, no GND vias**)
 - `das-boot.3dshapes/` — STEP + WRL (EasyEDA-sourced, cosmetic; check alignment in 3D viewer)
 
-The EasyEDA/LCSC footprint was checked and rejected: pads shifted 0.05–0.06 mm, wrong SW pad length, MODE mis-numbered as pad 12. LM7480x symbol/footprint TBD (likely stock-compatible packages; add to das-boot lib if not).
+The EasyEDA/LCSC TPS56837 footprint was checked and rejected: pads shifted 0.05–0.06 mm, wrong SW pad length, MODE mis-numbered as pad 12. Stock KiCad's generic WSON-12 was rejected for the LM7480x: wrong EP size (1.5 mm vs 1.3 mm wide).
 
 ## Board-level concerns
 
 - **Inline fuse per rail** from battery bus, sized just above expected continuous current
-- **Bulk capacitor (470–1000 µF)** on the servo rail output for stall transients
+- **220 µF 16V low-ESR polymer at each servo header** (4× ≈ 880 µF total — inside the 6V soft-start inrush budget of ~1.2 mF; populate only fitted servos, DNP the rest)
 - **SMBJ15A TVS + 100–220 µF electrolytic** on the common battery bus (see bus bulk capacitance)
 - **TVS diode + fuse at the Pi 5V input** — GPIO has zero protection
 - Reverse-polarity protection: **covered by the ideal-diode input stage** (P-FET no longer needed)
