@@ -5,6 +5,13 @@ name = "das-boot"
 version = "0.1.0"
 publish = false
 
+# Transport selection: exactly one. USB is the default for bench testing over
+# CDC-ACM; build the UART variant with `--no-default-features --features uart`.
+[features]
+default = ["usb"]
+usb = []
+uart = []
+
 [dependencies]
 # --- Embassy ---
 # NOTE: change "stm32f411ce" to YOUR exact part number (e.g. "stm32f401cc").
@@ -29,8 +36,11 @@ embassy-time = { version = "0.5.1", features = [
 ] }
 embassy-sync = { version = "0.8.0", features = ["defmt"] }
 embassy-futures = "0.1.2"
-embassy-usb = "0.6.0"
+embassy-usb = { version = "0.6.0", features = ["defmt"] }
 static_cell = "2"        # &'static mut buffers for USB descriptors / CDC state
+# Read/Write traits shared by CDC (Sender/BufferedReceiver) and UART
+# (RingBufferedUartRx/BufferedUart) — the transport abstraction. Match embassy's 0.7.
+embedded-io-async = "0.7.0"
 
 # --- Logging / panic over RTT ---
 defmt = "1.1.0"
@@ -40,6 +50,15 @@ panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 # --- Cortex-M runtime ---
 cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7.5"
+
+# -- Crc16 --
+crc16 = "0.4"
+
+# -- Vector --
+heapless = "0.8"
+
+# -- Enum representation --
+num_enum = { version = "0.7", default-features = false }
 
 # Smaller, faster firmware. Debug symbols are kept (they live on the host, not the chip).
 [profile.release]
