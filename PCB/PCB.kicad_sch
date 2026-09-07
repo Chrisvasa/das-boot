@@ -2170,6 +2170,12 @@
 		(uuid "4ddb6123-6df4-407d-8f6e-6ce378d226ea")
 	)
 	(junction
+		(at 40.64 149.86)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "51b5f708-e18d-47a3-8175-09cbafd6be43")
+	)
+	(junction
 		(at 35.56 91.44)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2426,6 +2432,16 @@
 			(type default)
 		)
 		(uuid "135c60d4-f0c0-43ed-b475-b2d4a3952b24")
+	)
+	(wire
+		(pts
+			(xy 40.64 149.86) (xy 45.72 149.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "13c2508c-ff61-4237-96b6-e48215fc0839")
 	)
 	(wire
 		(pts
@@ -3189,7 +3205,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 149.86) (xy 45.72 149.86)
+			(xy 36.83 149.86) (xy 40.64 149.86)
 		)
 		(stroke
 			(width 0)
@@ -4048,7 +4064,7 @@
 		(uuid "fb244d57-9c67-4166-8bff-1b339bed5f00")
 	)
 	(label "VOUT"
-		(at 43.18 149.86 180)
+		(at 36.83 149.86 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4446,6 +4462,85 @@
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
 					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Polarized")
+		(at 40.64 153.67 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "108f7ca9-b722-4b9e-a6ac-8fa6e461d432")
+		(property "Reference" "C30"
+			(at 29.21 152.654 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "220µF 35V"
+			(at 32.385 154.94 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm"
+			(at 41.6052 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Polarized capacitor"
+			(at 40.64 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b53c35a2-b724-4608-85f6-f9b134f69d74")
+		)
+		(pin "2"
+			(uuid "e84614a5-3056-448d-a27b-88ac706b40f6")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "C30")
 					(unit 1)
 				)
 			)
@@ -5261,6 +5356,84 @@
 			(project "PCB"
 				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
 					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 40.64 157.48 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "3516cc49-0f5d-4d06-bb57-b0348576a2c0")
+		(property "Reference" "#PWR042"
+			(at 40.64 163.83 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 46.736 159.258 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 40.64 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 40.64 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "56c32d45-3bce-4a62-aec4-253ca5bc9a03")
+		)
+		(instances
+			(project "PCB"
+				(path "/83d5fc6f-b77b-4b51-8f96-f8511009d123"
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
