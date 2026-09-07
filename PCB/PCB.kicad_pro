@@ -664,13 +664,25 @@
         "uuid": "83d5fc6f-b77b-4b51-8f96-f8511009d123"
       }
     ],
-    "used_designators": "J1-8,RN1,R1-26,L1-2,Q1-9,U1-5,U8-10,F1,D1-7,C1-29,C31,C37,C45-49,#PWR1-36,#PWR48",
+    "used_designators": "J1-11,RN1,R1-41,L1-2,Q1-18,U1-10,F1,D1-7,C1-37,C45-49,#PWR1-60",
     "variants": []
   },
   "sheets": [
     [
       "83d5fc6f-b77b-4b51-8f96-f8511009d123",
       "Root"
+    ],
+    [
+      "d79e4419-90e1-4806-8296-032622dedce7",
+      "Battery"
+    ],
+    [
+      "5e0e16c2-2804-49ec-b27a-0998a294e645",
+      "Battery1"
+    ],
+    [
+      "066abf53-36ed-45b2-bf0f-a91b277c92ed",
+      "Battery2"
     ]
   ],
   "text_variables": {},
